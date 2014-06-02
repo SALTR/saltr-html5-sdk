@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="SLTConfig.js"></script>
+	<script src="SLTUtils.js"></script>
+	<script src="SLTEventDispatcher.js"></script>
+	<script src="SLTTimer.js"></script>
+	<script src="SLTDevice.js"></script>
+	<script src="SLTDeserializer.js"></script>
+	<script src="game/SLTLevelBoardParser.js"></script>
+	<script src="game/SLTLevel.js"></script>
+	<script src="game/SLTLevelPack.js"></script>
+	<script src="resource/SLTTransport.js"></script>
+	<script src="resource/SLTResourceURLTicket.js"></script>
+	<script src="resource/SLTResource.js"></script>
+	<script src="SLTSaltr.js"></script>
+</head>
+<body>
+
+
+<script>
+	var instanceKey = "95e3eb06-e110-f897-50f7-73e7121a322b";
+	var client = new SALTR.Saltr(instanceKey);
+	client.initDevice("deviceId2", "iphone");
+	client.start(loadCompleteHandler, loadFailedHandler);
+
+	function loadCompleteHandler() {
+		var experiments = client._experiments;
+		var features = client._features;
+		var levelPacks = client._levelPacks;
+
+		var pack = levelPacks[0];
+		var level = pack._levels[0];
+
+		client.loadLevelContentData(level, levelLoadCompleteHandler, levelLoadFailedHandler);
+	}
+
+	function loadFailedHandler(error) {
+		console.log(error);
+	}
+
+	function levelLoadCompleteHandler() {
+		var pack = client._levelPacks[0];
+		var level = pack._levels[0];
+		
+		console.log(level._boardsNode);
+	}
+
+	function levelLoadFailedHandler() {}
+</script>
+
+</body>
+</html>
