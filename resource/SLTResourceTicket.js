@@ -1,7 +1,7 @@
 (function(window) {
 	var SALTR = window.SALTR = window.SALTR || {};
 
-	SALTR.ResourceURLTicket = function (url, variables) {
+	SALTR.ResourceTicket = function (url, variables) {
 		this._url = url;
 		this._variables = variables;
 		this._method = SALTR.Config.RequestMethod.GET;
@@ -10,7 +10,7 @@
 		this._dropTimeout = 0;
 	};
 
-	SALTR.Utils.extend(SALTR.ResourceURLTicket.prototype, {
+	SALTR.Utils.extend(SALTR.ResourceTicket.prototype, {
 		getURLRequest: function() {
 			var request = {};
 			request.url = this._url;
