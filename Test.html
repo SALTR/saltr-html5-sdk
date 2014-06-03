@@ -12,6 +12,7 @@
 	<script src="game/SLTLevel.js"></script>
 	<script src="game/SLTLevelPack.js"></script>
 	<script src="SLTFeature.js"></script>
+	<script src="game/SLTLevelSettings.js"></script>
 	<script src="resource/SLTTransport.js"></script>
 	<script src="resource/SLTResourceTicket.js"></script>
 	<script src="resource/SLTResource.js"></script>
@@ -21,13 +22,12 @@
 
 
 <script>
-	var instanceKey = "95e3eb06-e110-f897-50f7-73e7121a322b";
+	var instanceKey = "283672aa-a3a0-7f98-ae37-676ac5bd7472";
 	var client = new SALTR.Saltr(instanceKey);
 	client.initDevice("deviceId2", "iphone");
 	client.start(loadCompleteHandler, loadFailedHandler);
 
 	function loadCompleteHandler() {
-        debugger;
 		var experiments = client._experiments;
 		var features = client._features;
 		var levelPacks = client._levelPacks;
@@ -39,12 +39,10 @@
 	}
 
 	function loadFailedHandler(error) {
-        debugger;
 		console.log(error);
 	}
 
 	function levelLoadCompleteHandler() {
-        debugger;
 		var pack = client._levelPacks[0];
 		var level = pack._levels[0];
 		

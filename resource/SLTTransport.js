@@ -48,11 +48,12 @@
 				if (this._request.data) {
 					url += "?" + this._request.data;
 				}
-				this._xhr.open(this._request.method, url, true);
+				//TODO:ggor remove proxy.php
+				this._xhr.open(this._request.method, "proxy.php?url=" + encodeURIComponent(url), true);
 				this._xhr.send();
 			}
 			else if (this._request.method == SALTR.Config.RequestMethod.POST) {
-				this._xhr.open(this._request.method, this._request.url, true);
+				this._xhr.open(this._request.method, url, true);
 				this._xhr.send(this._request.data ? this._request.data : null);
 			}
 		},

@@ -6,7 +6,7 @@
 		COMMAND_ADD_PROPERTY: "ADDPROP",
 		COMMAND_SAVE_OR_UPDATE_FEATURE: "SOUFTR",
 	
-		SALTR_API_URL: "request.php",
+		SALTR_API_URL: "http://localapi.saltr.com:8081/httpjson.action",
 //		SALTR_API_URL: "https://api.saltr.com/httpjson.action",
 		SALTR_URL: "https://saltr.com/httpjson.action",
 	

@@ -46,9 +46,11 @@
 				levelNodes = levelPackNode.levels || levelPackNode.levelList;
 
 				levels = [];
-				for (var j = 0, levelsLength = levelNodes.length; j < levelsLength; j++) {
-					levelNode = levelNodes[j];
-					levels.push(new SALTR.Level(levelNode.id, levelNode.index, levelNode.url, levelNode.properties, levelNode.version));
+				if (levelNodes) {
+					for (var j = 0, levelsLength = levelNodes.length; j < levelsLength; j++) {
+						levelNode = levelNodes[j];
+						levels.push(new SALTR.Level(levelNode.id, levelNode.index, levelNode.url, levelNode.properties, levelNode.version));
+					}
 				}
 
 				levelPacks.push(new SALTR.LevelPack(levelPackNode.token, levelPackNode.index, levels));

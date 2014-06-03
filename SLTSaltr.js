@@ -73,7 +73,7 @@
 
 			var resource = this.createAppDataResource();
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
-                resource.dispose();
+				resource.dispose();
                 self.appDataAssetLoadCompleteHandler(jsonData);
             });
 			resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, error) {
@@ -92,7 +92,7 @@
 				args.device = this._device.getData();
 			}
 			if (this._partner != null) {
-				args.partner = this._partner.getData();;
+				args.partner = this._partner.getData();
 			}
 			args.instanceKey = this._instanceKey;
 
@@ -236,7 +236,10 @@
 			this._onLevelLoadSuccess = levelLoadCompleteHandler;
 			this._onLevelLoadFail = levelLoadFailedHandler;
 
-			var ticket = new SALTR.ResourceTicket(/*level._contentDataUrl*/ "level.php");
+            //TODO:ggor Remove this replace
+			var levelUrl = level._contentDataUrl.replace(":8081", ":8085");
+
+			var ticket = new SALTR.ResourceTicket(levelUrl);
 			var resource = new SALTR.Resource("loadLevel", ticket);
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
 				self.levelLoadCompleteHandler(level, jsonData);
