@@ -6,6 +6,8 @@
 	};
 
 	SALTR.Timer = function(endTime) {
+        SALTR.EventDispatcher.apply(this);
+
 		this._endTime = endTime;
 		this._currentTime = 0;
 

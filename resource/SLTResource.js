@@ -7,6 +7,8 @@
 	};
 
 	SALTR.Resource = function (id, ticket) {
+        SALTR.EventDispatcher.apply(this);
+
 		this._id = id;
 		this._ticket = ticket;
 		this._transport = null;
@@ -39,6 +41,9 @@
 		},
 
 		dispose: function() {
+            this.removeEventListener(SALTR.ResourceEvent.COMPLETE);
+            this.removeEventListener(SALTR.ResourceEvent.ERROR);
+
 			this._id = null;
 			this._ticket = null;
 			this._transport = null;
@@ -88,7 +93,6 @@
 		},
 
 		completeHandler: function(resource) {
-			debugger;
 			this.stopDropTimeoutTimer();
 			this.removeTransportListeners();
 			this.dispatchEvent(SALTR.ResourceEvent.COMPLETE, resource);

@@ -7,6 +7,8 @@
 	};
 
 	SALTR.Transport = function(request) {
+        SALTR.EventDispatcher.apply(this);
+
 		var self = this;
 
 		this._request = request;

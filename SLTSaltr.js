@@ -2,6 +2,8 @@
 	var SALTR = window.SALTR = window.SALTR || {};
 
 	SALTR.Saltr = function(instanceKey) {
+        SALTR.EventDispatcher.apply(this);
+
 		this._experiments = [];
 		this._features = {};
 		this._levelPacks = [];
@@ -46,13 +48,13 @@
 
 			var resource = this.createAppDataResource();
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
-				self.appDataAssetLoadCompleteHandler(jsonData);
-				resource.dispose();
-			});
+                resource.dispose();
+                self.appDataAssetLoadCompleteHandler(jsonData);
+            });
 			resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, error) {
-				self.appDataAssetLoadErrorHandler(error);
-				resource.dispose();
-			});
+                resource.dispose();
+                self.appDataAssetLoadErrorHandler(error);
+            });
 			resource.load();
 		},
 
@@ -103,7 +105,6 @@
 			var ticket = new SALTR.ResourceURLTicket(/*level._contentDataUrl*/ "level.php");
 			var resource = new SALTR.Resource("loadLevel", ticket);
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
-				debugger;
 				self.levelLoadCompleteHandler(level, jsonData);
 				resource.dispose();
 			});
@@ -115,7 +116,6 @@
 		},
 
 		levelLoadCompleteHandler: function(level, jsonData) {
-			debugger;
 			level.updateContent(jsonData);
 			this._onLevelLoadSuccess();
 		},
