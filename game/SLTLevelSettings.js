@@ -1,9 +1,8 @@
 (function(window) {
 	var SALTR = window.SALTR = window.SALTR || {};
 
-	SALTR.LevelSettings = function(assetMap, keySetMap, stateMap) {
+	SALTR.LevelSettings = function(assetMap, stateMap) {
 		this._assetMap = assetMap;
-		this._keySetMap = keySetMap;
 		this._stateMap = stateMap;
 	};
 
@@ -13,13 +12,6 @@
 				this._assetMap = assetMap;
 			}
 			return this._assetMap;
-		},
-
-		keySetMap: function(keySetMap) {
-			if (typeof keySetMap != "undefined") {
-				this._keySetMap = keySetMap;
-			}
-			return this._keySetMap;
 		},
 
 		stateMap: function(stateMap) {
