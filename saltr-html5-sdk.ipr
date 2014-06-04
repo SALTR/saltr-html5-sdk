@@ -30,6 +30,7 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="IdProvider" IDEtalkID="20E46B10D66806FBAD756692C5CEBF72" />
   <component name="JavaScriptLibraryMappings">
+    <file url="PROJECT" libraries="{Node.js v0.10.28 Core Modules}" />
     <excludedPredefinedLibrary name="HTML" />
     <excludedPredefinedLibrary name="HTML5 / EcmaScript 5" />
   </component>
@@ -162,8 +163,78 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="ProjectTasksOptions">
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--compilation_level SIMPLE_OPTIMIZATIONS --js $FileName$" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" value="Compiles .js files" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="js" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Closure Compiler" />
+      <option name="output" value="$FileNameWithoutExtension$.min.js" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="true" />
+      <option name="passParentEnvs" value="true" />
+      <option name="program" value="C:/Program Files/nodejs/compiler.jar" />
+      <option name="scopeName" value="Project Files" />
+      <option name="trackOnlyRoot" value="true" />
+      <option name="workingDir" value="$FileDir$" />
+      <envs />
+    </TaskOptions>
+  </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+  </component>
+  <component name="libraryTable">
+    <library name="Generated files" type="javaScript">
+      <properties>
+        <sourceFilesUrls>
+          <item url="file://$PROJECT_DIR$/SLTFeature.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTDevice.min.js" />
+          <item url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTPartner.min.js" />
+          <item url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTTimer.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
+          <item url="file://$PROJECT_DIR$/resource/SLTResource.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTLevelBoardParser.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTLevel.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTUtils.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTDeserializer.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTAsset.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTConfig.min.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/SLTFeature.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTDevice.min.js" />
+        <root url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
+        <root url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTPartner.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTTimer.min.js" />
+        <root url="file://$PROJECT_DIR$/resource/SLTResource.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTLevelBoardParser.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTLevel.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTUtils.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTDeserializer.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTAsset.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTConfig.min.js" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 
