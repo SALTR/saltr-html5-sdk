@@ -16,6 +16,8 @@
 		this._dropTimeout = ticket._dropTimeout;
 		this._timeoutTimer = null;
 
+		this._jsonData = null;
+
 		this.initTransport();
 	};
 
@@ -47,6 +49,18 @@
 			this._id = null;
 			this._ticket = null;
 			this._transport = null;
+		},
+
+		jsonData: function(data) {
+			if (typeof data != "undefined") {
+				try {
+					this._jsonData = JSON.parse(data);
+				}
+				catch (ex) {
+					throw new Error("[JSONAsset] JSON parsing Error. " + this._ticket._variables + " \n  " + data);
+				}
+			}
+			return this._jsonData;
 		},
 
 		initTransportListeners: function() {
@@ -92,10 +106,11 @@
 			}
 		},
 
-		completeHandler: function(resource) {
+		completeHandler: function(data) {
 			this.stopDropTimeoutTimer();
 			this.removeTransportListeners();
-			this.dispatchEvent(SALTR.ResourceEvent.COMPLETE, resource);
+			this.jsonData(data);
+			this.dispatchEvent(SALTR.ResourceEvent.COMPLETE, this);
 		},
 
 		errorHandler: function(error) {

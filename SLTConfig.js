@@ -2,7 +2,7 @@
 	var SALTR = window.SALTR = window.SALTR || {};
 
 	SALTR.Config = {
-		COMMAND_APP_DATA: "APPDATA",
+		CMD_APP_DATA: "APPDATA",
 		COMMAND_ADD_PROPERTY: "ADDPROP",
 		COMMAND_SAVE_OR_UPDATE_FEATURE: "syncFeatures",
 	

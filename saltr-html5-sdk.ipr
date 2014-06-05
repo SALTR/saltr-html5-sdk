@@ -192,18 +192,19 @@
     <library name="Generated files" type="javaScript">
       <properties>
         <sourceFilesUrls>
-          <item url="file://$PROJECT_DIR$/SLTFeature.min.js" />
           <item url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTFeature.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
           <item url="file://$PROJECT_DIR$/SLTDevice.min.js" />
           <item url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
           <item url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTPartner.min.js" />
           <item url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTTimer.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTPartner.min.js" />
           <item url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
+          <item url="file://$PROJECT_DIR$/SLTTimer.min.js" />
           <item url="file://$PROJECT_DIR$/resource/SLTResource.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
           <item url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
+          <item url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
           <item url="file://$PROJECT_DIR$/game/SLTLevelBoardParser.min.js" />
           <item url="file://$PROJECT_DIR$/game/SLTLevel.min.js" />
           <item url="file://$PROJECT_DIR$/SLTUtils.min.js" />
@@ -213,18 +214,20 @@
         </sourceFilesUrls>
       </properties>
       <CLASSES>
-        <root url="file://$PROJECT_DIR$/SLTFeature.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
         <root url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTFeature.min.js" />
+        <root url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
         <root url="file://$PROJECT_DIR$/SLTDevice.min.js" />
         <root url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
         <root url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
-        <root url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
         <root url="file://$PROJECT_DIR$/SLTPartner.min.js" />
-        <root url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
+        <root url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
         <root url="file://$PROJECT_DIR$/SLTTimer.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
         <root url="file://$PROJECT_DIR$/resource/SLTResource.min.js" />
-        <root url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
         <root url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
+        <root url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
         <root url="file://$PROJECT_DIR$/game/SLTLevelBoardParser.min.js" />
         <root url="file://$PROJECT_DIR$/game/SLTLevel.min.js" />
         <root url="file://$PROJECT_DIR$/SLTUtils.min.js" />

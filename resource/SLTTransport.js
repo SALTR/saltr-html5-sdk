@@ -20,16 +20,7 @@
 		}
 
 		this._xhr.onload = function() {
-			var jsonData;
-			if ( request.contentType == "JSON" ) {
-				try {
-					jsonData = JSON.parse(self._xhr.responseText);
-					self.dispatchEvent(SALTR.TransportEvent.COMPLETE, jsonData);
-				}
-				catch (ex) {
-					self.dispatchEvent(SALTR.TransportEvent.ERROR, "[JSONAsset] JSON parsing Error.");
-				}
-			}
+			self.dispatchEvent(SALTR.TransportEvent.COMPLETE, self._xhr.responseText);
 		};
 
 		this._xhr.onerror = function() {

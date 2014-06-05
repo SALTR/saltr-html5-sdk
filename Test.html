@@ -2,48 +2,41 @@
 <html>
 <head>
 	<title></title>
-	<script src="SLTConfig.min.js"></script>
-	<script src="SLTUtils.min.js"></script>
-	<script src="SLTEventDispatcher.min.js"></script>
-	<script src="SLTTimer.min.js"></script>
-	<script src="SLTDevice.min.js"></script>
-	<script src="SLTDeserializer.min.js"></script>
-	<script src="SLTFeature.min.js"></script>
-	<script src="game/SLTLevelBoardParser.min.js"></script>
-	<script src="game/SLTLevel.min.js"></script>
-	<script src="game/SLTLevelPack.min.js"></script>
-	<script src="game/SLTLevelSettings.min.js"></script>
-	<script src="game/SLTAsset.min.js"></script>
-	<script src="game/SLTCompositeAsset.min.js"></script>
-	<script src="resource/SLTTransport.min.js"></script>
-	<script src="resource/SLTResourceTicket.min.js"></script>
-	<script src="resource/SLTResource.min.js"></script>
-	<script src="SLTSaltr.min.js"></script>
+	<script src="SLTConfig.js"></script>
+	<script src="SLTUtils.js"></script>
+	<script src="SLTEventDispatcher.js"></script>
+	<script src="SLTTimer.js"></script>
+	<script src="SLTDevice.js"></script>
+	<script src="SLTDeserializer.js"></script>
+	<script src="SLTFeature.js"></script>
+	<script src="game/SLTLevelBoardParser.js"></script>
+	<script src="game/SLTLevel.js"></script>
+	<script src="game/SLTLevelPack.js"></script>
+	<script src="game/SLTLevelSettings.js"></script>
+	<script src="game/SLTAsset.js"></script>
+	<script src="game/SLTCompositeAsset.js"></script>
+	<script src="resource/SLTTransport.js"></script>
+	<script src="resource/SLTResourceTicket.js"></script>
+	<script src="resource/SLTResource.js"></script>
+	<script src="SLTSaltr.js"></script>
 </head>
 <body>
 
 
 <script>
-	/*var clientKey = "95e3eb06-e110-f897-50f7-73e7121a322b";
-	var client = new SALTR.Saltr(clientKey);
-    client.appVersion("Build 124.56.3");
-    client.defineFeature("antikvar1_5", {
-        "aa": "bb",
-        "cc": "dd"
-    });
-	client.initDevice("deviceId2", "iphone");
-	client.start(loadCompleteHandler, loadFailedHandler);
+	var clientKey = "283672aa-a3a0-7f98-ae37-676ac5bd7472";
+	var saltrClient = new SALTR.SaltrWeb(clientKey);
+	saltrClient.setSocial(null, null);
+	//saltrClient.start(loadCompleteHandler, loadFailedHandler);
 
 	function loadCompleteHandler() {
-		var experiments = client._experiments;
-		var features = client._features;
-		var levelPacks = client._levelPacks;
+		var levelPacks = saltrClient._levelPacks;
 		debugger;
 
 		var pack = levelPacks[0];
 		var level = pack._levels[0];
 
-		client.loadLevelContentData(level, levelLoadCompleteHandler, levelLoadFailedHandler);
+		saltrClient.loadLevelContentData(level, levelLoadCompleteHandler, levelLoadFailedHandler);
 	}
 
 	function loadFailedHandler(error) {
@@ -51,7 +44,7 @@
 	}
 
 	function levelLoadCompleteHandler() {
-		var pack = client._levelPacks[0];
+		var pack = saltrClient._levelPacks[0];
 		var level = pack._levels[0];
 		
 		console.log(level._boardsNode);
