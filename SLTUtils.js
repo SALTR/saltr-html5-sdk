@@ -22,7 +22,11 @@
 			}
 
 			return resultUrlVariables.join("&");
-		}
+		},
+
+        randomWithin: function(min, max, isFloat) {
+            return isFloat ? Math.random() * (1 + max - min) + min : parseInt(Math.random() * (1 + max - min)) + min;
+        }
 
 	};
 })(window);

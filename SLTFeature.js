@@ -8,8 +8,21 @@
     };
 
     SALTR.Utils.extend(SALTR.Feature.prototype, {
-        getProperties: function () {
+
+        token: function () {
+            return this._token;
+        },
+
+        properties: function () {
             return this._properties || this._defaultProperties;
+        },
+
+        defaultProperties: function (defaultProperties) {
+            if (typeof defaultProperties != "undefined") {
+                this._defaultProperties = defaultProperties;
+            }
+            return this._defaultProperties;
         }
+
     });
 })(window);

@@ -24,8 +24,13 @@
 
 
 <script>
-	var instanceKey = "283672aa-a3a0-7f98-ae37-676ac5bd7472";
-	var client = new SALTR.Saltr(instanceKey);
+	/*var clientKey = "95e3eb06-e110-f897-50f7-73e7121a322b";
+	var client = new SALTR.Saltr(clientKey);
+    client.appVersion("Build 124.56.3");
+    client.defineFeature("antikvar1_5", {
+        "aa": "bb",
+        "cc": "dd"
+    });
 	client.initDevice("deviceId2", "iphone");
 	client.start(loadCompleteHandler, loadFailedHandler);
 
@@ -53,6 +58,58 @@
 	}
 
 	function levelLoadFailedHandler() {}
+	*/
+
+    function testChunk() {
+        var chunkCells = [
+            {"x": 0, "y": 0, "assetInstance": null, "properties": {}, "isBlocked": false},
+            {"x": 1, "y": 0, "assetInstance": null, "properties": {}, "isBlocked": false},
+            {"x": 0, "y": 1, "assetInstance": null, "properties": {}, "isBlocked": false},
+            {"x": 1, "y": 1, "assetInstance": null, "properties": {}, "isBlocked": false}
+        ];
+
+        var chunkAssetsInfo = [
+            {
+                "assetId": "1592",
+                "stateId": null,
+                "distributionType": "count",
+                "distributionValue": 4
+            }
+        ];
+
+        var levelSettings = {
+            assetMap: {
+                1592: {
+                    keys: null,
+                    type: "regular"
+                },
+                1593: {
+                    keys: null,
+                    type: "regular"
+                },
+                1594: {
+                    keys: null,
+                    type: "strawberry"
+                },
+                4091: {
+                    keys: null,
+                    type: "rererer"
+                },
+                4099: {
+                    keys: null,
+                    type: "saC"
+                }
+            },
+            stateMap: {
+                937: "frozen"
+            },
+            keySetMap: null
+        };
+
+        var chunk = SALTR.Chunk(chunkCells, chunkAssetsInfo, levelSettings);
+        chunk.generate();
+        debugger;
+    }
 </script>
 
 </body>

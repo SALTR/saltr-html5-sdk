@@ -1,7 +1,7 @@
 (function(window) {
 	var SALTR = window.SALTR = window.SALTR || {};
 
-	SALTR.Deserialize = {
+	SALTR.Deserializer = {
 		decodeExperiments: function(jsonData) {
 			var experiments = [],
 				experimentNodes = jsonData.experiments || jsonData.experimentInfo,
@@ -27,7 +27,7 @@
 
 			for (var i = 0, length = featureNodes.length; i < length; i++) {
 				featureNode = featureNodes[i];
-				features[featureNode.token] = featureNode;
+				features[featureNode.token] = new SALTR.Feature(featureNode.token, featureNode.data);
 			}
 
 			return features;

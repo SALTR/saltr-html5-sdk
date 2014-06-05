@@ -4,11 +4,11 @@
 	SALTR.Config = {
 		COMMAND_APP_DATA: "APPDATA",
 		COMMAND_ADD_PROPERTY: "ADDPROP",
-		COMMAND_SAVE_OR_UPDATE_FEATURE: "SOUFTR",
+		COMMAND_SAVE_OR_UPDATE_FEATURE: "syncFeatures",
 	
-		SALTR_API_URL: "http://localapi.saltr.com:8081/httpjson.action",
+		SALTR_API_URL: "http://localapi.saltr.com:8081/call",
 //		SALTR_API_URL: "https://api.saltr.com/httpjson.action",
-		SALTR_URL: "https://saltr.com/httpjson.action",
+		SALTR_URL: "http://localadmin.saltr.com:8085/call",
 	
 		APP_DATA_URL_CACHE: "app_data_cache.json",
 		LEVEL_PACK_URL_PACKAGE: "saltr/level_packs.json",
