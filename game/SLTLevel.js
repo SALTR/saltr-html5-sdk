@@ -18,7 +18,6 @@
 			this._boardsNode = rootNode["boards"];
 			this._properties = rootNode["properties"];
 			this._levelSettings = SALTR.LevelBoardParser.parseLevelSettings(rootNode);
-			debugger;
 			this.generateAllBoards();
 			this._contentReady = true;
 		},

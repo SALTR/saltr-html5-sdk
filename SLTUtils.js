@@ -32,7 +32,6 @@
 				}
 			}
 			return count;
-		}
 		},
 
         randomWithin: function(min, max, isFloat) {

@@ -98,7 +98,7 @@
 				activeFeatures = this._activeFeatures;
 			for (var x in activeFeatures) {
 				if (activeFeatures.hasOwnProperty(x)) {
-					tokens.push(activeFeatures[x].token);
+					tokens.push(activeFeatures[x].token());
 				}
 			}
 			return tokens;
@@ -108,30 +108,30 @@
 			var activeFeature = this._activeFeatures[token],
 				devFeature;
 			if (typeof activeFeature != "undefined") {
-				return activeFeature.properties;
+				return activeFeature.properties();
 			}
 			else {
 				devFeature = this._developerFeatures[token];
 				if (typeof devFeature != "undefined" && devFeature.required) {
-					return devFeature.properties;
+					return devFeature.properties();
 				}
 			}
 			return null;
 		},
 
 		importLevelFromJSON: function(json, level) {
-			var levelData = JSON.parse(json);
+			var levelData = typeof json == "string" ? JSON.parse(json) : json;
 			level.updateContent(levelData);
 		},
 
 		importLevelPacksFromJSON: function(json) {
-            var applicationData = JSON.parse(json);
-            this._levelPacks = SALTR.Deserialize.decodeLevels(applicationData);
+            var applicationData = typeof json == "string" ? JSON.parse(json) : json;
+            this._levelPacks = SALTR.Deserializer.decodeLevels(applicationData);
         },
 
 		importDeveloperFeaturesFromJSON: function(json) {
 			var featuresJSON = JSON.parse(json);
-			this._developerFeatures = SALTR.Deserialize.decodeFeatures(featuresJSON);
+			this._developerFeatures = SALTR.Deserializer.decodeFeatures(featuresJSON);
 		},
 
         defineFeature: function(token, properties, required) {
@@ -149,11 +149,11 @@
 				throw new Error("'socialId' and 'socialNetwork' fields are required and can't be null.");
 			}
 
-			if (SALTR.Utils.getObjectSize(this._developerFeatures) == 0 && this._useNoFeatures == false) {
+			if (this._useNoFeatures == false && SALTR.Utils.getObjectSize(this._developerFeatures) == 0) {
 				throw new Error("Features should be defined.");
 			}
 
-			if (this._levelPacks.length == 0 && this._useNoLevels == false) {
+			if (this._useNoLevels == false && this._levelPacks.length == 0) {
 				throw new Error("Levels should be imported.");
 			}
 
@@ -167,7 +167,8 @@
 		},
 
 		connect: function(successCallback, failCallback) {
-			var self = this;
+			var self = this,
+				resource;
 
 			if (this._isLoading || !this._started) {
 				return;
@@ -178,9 +179,9 @@
 
 			this._isLoading = true;
 
-			var resource = this.createAppDataResource();
+			resource = this.createAppDataResource();
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, resource) {
-                self.appDataAssetLoadCompleteHandler(resource);
+				self.appDataAssetLoadCompleteHandler(resource);
             });
 			resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, resource) {
                 self.appDataAssetLoadErrorHandler(resource);
@@ -210,13 +211,9 @@
 		},
 
 		appDataAssetLoadCompleteHandler: function(resource) {
-			var token,
-				data = resource.jsonData(),
+			var data = resource.jsonData(),
 				status = data.status,
-				responseData = data.responseData,
-				saltrFeatures,
-				saltrFeature,
-				defaultFeature;
+				responseData = data.responseData;
 
 			this._isLoading = false;
 
@@ -224,36 +221,36 @@
 				this.syncDeveloperFeatures();
 			}
 
-			if (status == SALTR.Utils.RESULT_SUCCEED) {
+			if (status == SALTR.Config.RESULT_SUCCEED) {
 				try {
-					saltrFeatures = SALTR.Deserialize.decodeFeatures(responseData);
+					this._activeFeatures = SALTR.Deserializer.decodeFeatures(responseData);
 				}
 				catch (ex) {
 					throw new Error("[SALTR] Failed to decode Features.");
 				}
-			}
 
-			this._connected = true;
-
-			this._saltrUserId = jsonData.saltId || jsonData.saltrUserId;
-
-			this._experiments = SALTR.Deserialize.decodeExperiments(jsonData);
-			saltrFeatures = SALTR.Deserialize.decodeFeatures(jsonData);
-			this._levelPacks = SALTR.Deserialize.decodeLevels(jsonData);
-
-			for (token in saltrFeatures) {
-				if (saltrFeatures.hasOwnProperty(token)) {
-					saltrFeature = saltrFeatures[token];
-					defaultFeature = this._developerFeatures[token];
-					if (defaultFeature) {
-						saltrFeature.defaultProperties = defaultFeature.defaultProperties;
-					}
-					this._developerFeatures[token] = saltrFeature;
+				try {
+					this._experiments = SALTR.Deserializer.decodeExperiments(responseData);
 				}
+				catch (ex) {
+					throw new Error("[SALTR] Failed to decode Experiments.");
+				}
+
+				try {
+					this._levelPacks = SALTR.Deserializer.decodeLevels(responseData);
+				}
+				catch (ex) {
+					throw new Error("[SALTR] Failed to decode LevelPacks.");
+				}
+
+				this._saltrUserId = responseData.saltId || responseData.saltrUserId;
+				this._connected = true;
+
+				this._appDataLoadSuccessCallback();
 			}
-
-			this._appDataLoadSuccessCallback();
-
+			else {
+				this._appDataLoadFailCallback("[SALTR] Failed to load appData. " + responseData.errorCode + " " + responseData.errorMessage);
+			}
 			resource.dispose();
 		},
 
@@ -263,11 +260,12 @@
 		},
 
         addUserProperty: function(propertyNames, propertyValues, operations) {
-            var properties = [],
+            var self = this,
+	            properties = [],
                 args = {},
                 urlVars = {},
-                ticket = null,
-                resource = null;
+                ticket,
+                resource;
 
             for (var i = 0; i < propertyNames.length; i++) {
                 properties.push({
@@ -286,73 +284,78 @@
 
             ticket = new SALTR.ResourceTicket(SALTR.Config.SALTR_API_URL, urlVars);
             resource = new SALTR.Resource("userProperty", ticket);
-            resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
-                resource.dispose();
-                this.addUserPropertyCompleteHandler(jsonData);
+            resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, resource) {
+                self.addUserPropertyCompleteHandler(resource);
             });
-            resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, error) {
-                resource.dispose();
-                this.addUserPropertyErrorHandler(error);
+            resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, resource) {
+                self.addUserPropertyErrorHandler(error);
             });
             resource.load();
         },
 
-        addUserPropertyCompleteHandler: function (jsonData) {
+        addUserPropertyCompleteHandler: function (resource) {
+	        var jsonData = resource.jsonData();
+	        resource.dispose();
         },
 
-        addUserPropertyErrorHandler: function (error) {
+        addUserPropertyErrorHandler: function (resource) {
+	        console.log("asdasdasd");
+	        resource.dispose();
         },
 
         syncDeveloperFeatures: function() {
-             var urlVars = {},
-                 features = this._developerFeatures,
-                 feature,
-                 featureList = [],
-                 ticket,
-                 resource;
+	        var self = this,
+		        urlVars = {},
+		        features = this._developerFeatures,
+		        feature,
+		        featureList = [],
+		        ticket,
+		        resource;
 
-             urlVars.cmd = SALTR.Config.COMMAND_SAVE_OR_UPDATE_FEATURE;
-             urlVars.clientKey = this._clientKey;
+	        urlVars.cmd = SALTR.Config.COMMAND_SAVE_OR_UPDATE_FEATURE;
+	        urlVars.clientKey = this._clientKey;
 
-             if (this._appVersion) {
-                urlVars.appVersion = this._appVersion;
-             }
+	        if (this._appVersion) {
+		        urlVars.appVersion = this._appVersion;
+	        }
 
-             for (var token in features) {
-                 if (features.hasOwnProperty(token)) {
-                     feature = features[token];
-                     if (feature.defaultProperties) {
-                         featureList.push({
-                             token: feature.token,
-                             value: JSON.stringify(feature.defaultProperties)
-                         });
-                     }
-                 }
-             }
-             urlVars.data = JSON.stringify(featureList);
+	        for (var token in features) {
+		        if (features.hasOwnProperty(token)) {
+			        feature = features[token];
+			        featureList.push({
+				        token: feature.token(),
+				        value: JSON.stringify(feature.properties())
+			        });
+		        }
+	        }
+	        urlVars.data = JSON.stringify(featureList);
 
-             ticket = new SALTR.ResourceTicket(SALTR.Config.SALTR_URL, urlVars);
-             resource = new SALTR.Resource("saveOrUpdateFeature", ticket);
-             resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function (event, jsonData) {
-                 resource.dispose();
-                 this.featureSyncCompleteHandler(jsonData);
-             });
-             resource.addEventListener(SALTR.ResourceEvent.ERROR, function (event, error) {
-                 resource.dispose();
-                 this.featureSyncErrorHandler(error);
-             });
+	        ticket = new SALTR.ResourceTicket(SALTR.Config.SALTR_URL, SALTR.Utils.serializeURLVariables(urlVars));
+	        resource = new SALTR.Resource("syncFeatures", ticket);
+	        resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function (event, resource) {
+		        self.featureSyncCompleteHandler(resource);
+	        });
+	        resource.addEventListener(SALTR.ResourceEvent.ERROR, function (event, resource) {
+		        self.featureSyncErrorHandler(resource);
+	        });
 
-             resource.load();
+	        resource.load();
          },
 
-        featureSyncCompleteHandler: function (jsonData) {
+        featureSyncCompleteHandler: function (resource) {
+	        console.log("[Saltr] Dev feature Sync is complete.");
+	        resource.dispose();
         },
 
-        featureSyncErrorHandler: function (error) {
+        featureSyncErrorHandler: function (resource) {
+	        console.log("[Saltr] Dev feature Sync is failed.");
+	        resource.dispose();
         },
 
 		loadLevelContentData: function(level, levelLoadCompleteHandler, levelLoadFailedHandler) {
-			var self = this;
+			var self = this,
+				ticket,
+				resource;
 
 			this._onLevelLoadSuccess = levelLoadCompleteHandler;
 			this._onLevelLoadFail = levelLoadFailedHandler;
@@ -360,27 +363,27 @@
             //TODO:ggor Remove this replace
 			var levelUrl = level._contentDataUrl.replace(":8081", ":8085");
 
-			var ticket = new SALTR.ResourceTicket(levelUrl);
-			var resource = new SALTR.Resource("loadLevel", ticket);
-			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, jsonData) {
-				self.levelLoadCompleteHandler(level, jsonData);
-				resource.dispose();
+			ticket = new SALTR.ResourceTicket(levelUrl);
+			resource = new SALTR.Resource("loadLevel", ticket);
+			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, resource) {
+				self.levelLoadCompleteHandler(level, resource);
 			});
-			resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, error) {
-				self.levelLoadFailedHandler(error);
-				resource.dispose();
+			resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, resource) {
+				self.levelLoadFailedHandler(resource);
 			});
 			resource.load();
 		},
 
-		levelLoadCompleteHandler: function(level, jsonData) {
+		levelLoadCompleteHandler: function(level, resource) {
+			var jsonData = resource.jsonData();
 			level.updateContent(jsonData);
 			this._onLevelLoadSuccess();
+			resource.dispose();
 		},
 
-		levelLoadFailedHandler: function(error) {
-			console.error(error);
+		levelLoadFailedHandler: function(resource) {
 			this._onLevelLoadFail();
+			resource.dispose();
 		}
 
 	});
