@@ -239,7 +239,7 @@
                 self.addUserPropertyCompleteHandler(resource);
             });
             resource.addEventListener(SALTR.ResourceEvent.ERROR, function(event, resource) {
-                self.addUserPropertyErrorHandler(error);
+                self.addUserPropertyErrorHandler(resource);
             });
             resource.load();
         },
