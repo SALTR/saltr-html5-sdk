@@ -5,7 +5,7 @@
         this.layer = layer;
 
         this.assetId = compositeAssetId;
-        this.stateId = stateId;
+        this.stateId = stateId || null;
         this.cell = cell;
         this.assetMap = levelSettings.assetMap;
         this.stateMap = levelSettings.stateMap;

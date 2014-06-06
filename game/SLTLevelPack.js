@@ -3,7 +3,7 @@
 
     SALTR.LevelPack = function(token, index, levels) {
         this.token = token;
-        this.levels = levels;
+        this.levels = levels || [];
         this.index = index;
     };
 

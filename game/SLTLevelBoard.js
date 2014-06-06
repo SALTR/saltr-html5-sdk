@@ -5,7 +5,7 @@
         this.cells = cells;
         this.cols = cells.width;
         this.rows = cells.height;
-        this.properties = properties;
+        this.properties = properties || {};
         this.layers = layers;
     };
 

@@ -3,8 +3,8 @@
 
 	SALTR.AssetInstance = function(token, state, properties) {
 		this.token = token;
-		this.state = state || "";
-		this.properties = properties || null;
+		this.state = state || null;
+		this.properties = properties || {};
 	};
 
 	SALTR.Utils.extend(SALTR.AssetInstance.prototype, {

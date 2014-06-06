@@ -5,7 +5,7 @@
         this.id = id;
         this.index = index;
         this.contentUrl = contentUrl;
-        this.properties = properties;
+        this.properties = properties || {};
         this.version = version;
         this.boards = {};
         this.contentReady = false;

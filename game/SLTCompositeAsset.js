@@ -4,7 +4,7 @@
 	SALTR.CompositeAsset = function(cellInfos, token, properties) {
 		SALTR.Asset.apply(this, [token, properties]);
 
-		this.cellInfos = cellInfos;
+		this.cellInfos = cellInfos || [];
 	};
 
 	SALTR.CompositeAsset.prototype = new SALTR.Asset;

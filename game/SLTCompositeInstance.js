@@ -4,7 +4,7 @@
 	SALTR.CompositeInstance = function(token, state, properties, cells) {
         SALTR.AssetInstance.apply(this, [token, state, properties]);
 
-		this.cells = cells;
+		this.cells = cells || [];
 	};
 
 	SALTR.CompositeInstance.prototype = new SALTR.AssetInstance;
