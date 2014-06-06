@@ -7,8 +7,8 @@
         this._chunkAssetRules = chunkAssetRules;
 
         this._availableCells = [];
-        this._assetMap = levelSettings.assetsMap;
-        this._stateMap = levelSettings.statesMap;
+        this.assetMap = levelSettings.assetsMap;
+        this.stateMap = levelSettings.statesMap;
 
         this.generateCellContrent()
     };
@@ -50,8 +50,8 @@
         },
 
         generateAssetInstances: function (count, assetId, stateId) {
-            var asset = this._assetMap[assetId];
-            var state = this._stateMap[stateId];
+            var asset = this.assetMap[assetId];
+            var state = this.stateMap[stateId];
 
             var randCell;
             var randCellIndex;

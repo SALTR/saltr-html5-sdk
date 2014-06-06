@@ -9,14 +9,14 @@
 	SALTR.Resource = function (id, ticket) {
         SALTR.EventDispatcher.apply(this);
 
-		this._id = id;
-		this._ticket = ticket;
-		this._transport = null;
+		this.id = id;
+		this.ticket = ticket;
+		this.transport = null;
 
-		this._dropTimeout = ticket._dropTimeout;
-		this._timeoutTimer = null;
+		this.dropTimeout = ticket.dropTimeout;
+		this.timeoutTimer = null;
 
-		this._jsonData = null;
+		this.jsonData = null;
 
 		this.initTransport();
 	};
@@ -26,19 +26,19 @@
 	SALTR.Utils.extend(SALTR.Resource.prototype, {
 
 		initTransport: function() {
-			var request = this._ticket.getURLRequest();
-			this._transport = new SALTR.Transport(request);
+			var request = this.ticket.getURLRequest();
+			this.transport = new SALTR.Transport(request);
 		},
 
 		load: function() {
 			this.initTransportListeners();
-			this._transport.load();
+			this.transport.load();
 			this.startDropTimeoutTimer();
 		},
 
 		stop: function() {
 			this.removeTransportListeners();
-			this._transport.close();
+			this.transport.close();
 			this.stopDropTimeoutTimer();
 		},
 
@@ -46,62 +46,61 @@
             this.removeEventListener(SALTR.ResourceEvent.COMPLETE);
             this.removeEventListener(SALTR.ResourceEvent.ERROR);
 
-			this._id = null;
-			this._ticket = null;
-			this._transport = null;
+			this.id = null;
+			this.ticket = null;
+			this.transport = null;
 		},
 
-		jsonData: function(data) {
-			if (typeof data != "undefined") {
-				try {
-					this._jsonData = JSON.parse(data);
-				}
-				catch (ex) {
-					throw new Error("[JSONAsset] JSON parsing Error. " + this._ticket._variables + " \n  " + data);
-				}
+		getJsonData: function() {
+			var jsonData = null;
+			try {
+				jsonData = JSON.parse(this.jsonData);
 			}
-			return this._jsonData;
+			catch (ex) {
+				throw new Error("[JSONAsset] JSON parsing Error. " + this.ticket.variables + " \n  " + data);
+			}
+			return jsonData;
 		},
 
 		initTransportListeners: function() {
 			var self = this;
 
-			this._transport.addEventListener(SALTR.TransportEvent.COMPLETE, function(event, resource) {
+			this.transport.addEventListener(SALTR.TransportEvent.COMPLETE, function(event, resource) {
 				self.completeHandler(resource);
 			});
-			this._transport.addEventListener(SALTR.TransportEvent.ERROR, function(event, error) {
+			this.transport.addEventListener(SALTR.TransportEvent.ERROR, function(event, error) {
 				self.errorHandler(error);
 			});
 		},
 
 		removeTransportListeners: function() {
-			this._transport.removeEventListener(SALTR.TransportEvent.COMPLETE);
-			this._transport.removeEventListener(SALTR.TransportEvent.ERROR);
+			this.transport.removeEventListener(SALTR.TransportEvent.COMPLETE);
+			this.transport.removeEventListener(SALTR.TransportEvent.ERROR);
 		},
 
 		startDropTimeoutTimer: function() {
 			var self = this;
-			if ( self._dropTimeout != 0 ) {
-				self._timeoutTimer = new SALTR.Timer(self._dropTimeout);
-				self._timeoutTimer.addEventListener(SALTR.TimerEvent.TIMER_COMPLETE, function() {
+			if ( self.dropTimeout != 0 ) {
+				self.timeoutTimer = new SALTR.Timer(self.dropTimeout);
+				self.timeoutTimer.addEventListener(SALTR.TimerEvent.TIMER_COMPLETE, function() {
 					self.dropDropTimeoutTimer();
 				});
-				self._timeoutTimer.start();
+				self.timeoutTimer.start();
 			}
 		},
 
 		stopDropTimeoutTimer: function() {
-			if ( this._dropTimeout != 0 ) {
-				this._timeoutTimer.stop();
-				this._timeoutTimer = null;
+			if ( this.dropTimeout != 0 ) {
+				this.timeoutTimer.stop();
+				this.timeoutTimer = null;
 			}
 		},
 
 		dropDropTimeoutTimer: function() {
-			if ( this._timeoutTimer ) {
-				this._transport.close();
-				this._timeoutTimer.removeEventListener(SALTR.TimerEvent.TIMER_COMPLETE);
-				this._timeoutTimer = null;
+			if ( this.timeoutTimer ) {
+				this.transport.close();
+				this.timeoutTimer.removeEventListener(SALTR.TimerEvent.TIMER_COMPLETE);
+				this.timeoutTimer = null;
 				this.errorHandler("[Asset] Loading is too long, so it stopped by force.");
 			}
 		},
@@ -109,7 +108,7 @@
 		completeHandler: function(data) {
 			this.stopDropTimeoutTimer();
 			this.removeTransportListeners();
-			this.jsonData(data);
+			this.jsonData = data;
 			this.dispatchEvent(SALTR.ResourceEvent.COMPLETE, this);
 		},
 

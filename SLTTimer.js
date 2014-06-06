@@ -8,11 +8,11 @@
 	SALTR.Timer = function(endTime) {
         SALTR.EventDispatcher.apply(this);
 
-		this._endTime = endTime;
-		this._currentTime = 0;
+		this.endTime = endTime;
+		this.currentTime = 0;
 
-		this._interval = 1000;
-		this._timerId = null;
+		this.interval = 1000;
+		this.timerId = null;
 	};
 
 	SALTR.Timer.prototype = new SALTR.EventDispatcher();
@@ -21,13 +21,13 @@
 		start: function() {
 			var self = this;
 
-			self._timerId = setInterval(function() {
-				self._currentTime += self._interval;
+			self.timerId = setInterval(function() {
+				self.currentTime += self.interval;
 
-				if ( self._currentTime >= self._endTime ) {
+				if ( self.currentTime >= self.endTime ) {
 					self.complete();
 				}
-			}, self._interval);
+			}, self.interval);
 		},
 
 		complete: function() {
@@ -36,7 +36,7 @@
 		},
 
 		stop: function() {
-			clearInterval( this._timerId );
+			clearInterval( this.timerId );
 		}
 	});
 })(window);

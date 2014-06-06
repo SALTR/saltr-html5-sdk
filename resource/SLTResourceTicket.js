@@ -2,26 +2,26 @@
 	var SALTR = window.SALTR = window.SALTR || {};
 
 	SALTR.ResourceTicket = function (url, variables) {
-		this._url = url;
-		this._variables = variables;
-		this._method = SALTR.Config.RequestMethod.GET;
-		this._contentType = "JSON";
+		this.url = url;
+		this.variables = variables;
+		this.method = SALTR.Config.RequestMethod.GET;
+		this.contentType = "JSON";
 
-		this._dropTimeout = 0;
+		this.dropTimeout = 0;
 	};
 
 	SALTR.Utils.extend(SALTR.ResourceTicket.prototype, {
 		getURLRequest: function() {
 			var request = {};
-			request.url = this._url;
-			request.data = this._variables;
-			request.method = this._method;
-			request.contentType = this._contentType;
+			request.url = this.url;
+			request.data = this.variables;
+			request.method = this.method;
+			request.contentType = this.contentType;
 			return request;
 		},
 
 		setDropTimeout: function(dropTimeout) {
-			this._dropTimeout = dropTimeout;
+			this.dropTimeout = dropTimeout;
 		}
 	});
 })(window);

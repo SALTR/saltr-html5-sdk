@@ -11,19 +11,19 @@
 
 		var self = this;
 
-		this._request = request;
+		this.request = request;
 
-		this._xhr = new XMLHttpRequest();
+		this.xhr = new XMLHttpRequest();
 
-		if (!"withCredentials" in this._xhr) {
-			this._xhr = new XDomainRequest();
+		if (!"withCredentials" in this.xhr) {
+			this.xhr = new XDomainRequest();
 		}
 
-		this._xhr.onload = function() {
-			self.dispatchEvent(SALTR.TransportEvent.COMPLETE, self._xhr.responseText);
+		this.xhr.onload = function() {
+			self.dispatchEvent(SALTR.TransportEvent.COMPLETE, self.xhr.responseText);
 		};
 
-		this._xhr.onerror = function() {
+		this.xhr.onerror = function() {
 			self.dispatchEvent(SALTR.TransportEvent.ERROR);
 		};
 	};
@@ -33,24 +33,24 @@
 	SALTR.Utils.extend(SALTR.Transport.prototype, {
 
 		load: function() {
-			var url = this._request.url;
+			var url = this.request.url;
 
-			if (this._request.method == SALTR.Config.RequestMethod.GET) {
-				if (this._request.data) {
-					url += "?" + this._request.data;
+			if (this.request.method == SALTR.Config.RequestMethod.GET) {
+				if (this.request.data) {
+					url += "?" + this.request.data;
 				}
 				//TODO:ggor remove proxy.php
-				this._xhr.open(this._request.method, "proxy.php?url=" + encodeURIComponent(url), true);
-				this._xhr.send();
+				this.xhr.open(this.request.method, "proxy.php?url=" + encodeURIComponent(url), true);
+				this.xhr.send();
 			}
-			else if (this._request.method == SALTR.Config.RequestMethod.POST) {
-				this._xhr.open(this._request.method, url, true);
-				this._xhr.send(this._request.data ? this._request.data : null);
+			else if (this.request.method == SALTR.Config.RequestMethod.POST) {
+				this.xhr.open(this.request.method, url, true);
+				this.xhr.send(this.request.data ? this.request.data : null);
 			}
 		},
 
 		close: function() {
-			this._xhr.abort();
+			this.xhr.abort();
 		}
 
 	});

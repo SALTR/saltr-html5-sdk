@@ -2,16 +2,16 @@
 	var SALTR = window.SALTR = window.SALTR || {};
 
 	SALTR.Partner = function (partnerId, partnerType) {
-		this._partnerId = partnerId;
-		this._partnerType = partnerType;
+		this.partnerId = partnerId;
+		this.partnerType = partnerType;
 	};
 
 	SALTR.Utils.extend(SALTR.Partner.prototype, {
 
-		getData: function() {
+		getPartnerData: function() {
 			return {
-                partnerId: this._partnerId,
-                partnerType: this._partnerType
+                partnerId: this.partnerId,
+                partnerType: this.partnerType
 			};
 		}
 

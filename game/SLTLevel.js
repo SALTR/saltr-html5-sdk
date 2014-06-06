@@ -2,8 +2,8 @@
 	var SALTR = window.SALTR = window.SALTR || {};
 
 	SALTR.Level = function(id, index, contentDataUrl, properties, version) {
-		this._id = id;
-		this._index = index;
+		this.id = id;
+		this.index = index;
 		this._contentDataUrl = contentDataUrl;
 		this._properties = properties;
 		this._version = version;

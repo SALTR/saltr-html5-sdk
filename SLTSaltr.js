@@ -4,98 +4,49 @@
 	SALTR.SaltrWeb = function(clientKey) {
         SALTR.EventDispatcher.apply(this);
 
-		this._socialId = null;
-		this._socialNetwork = null;
-		this._connected = false;
-		this._clientKey = clientKey;
-		this._saltrUserId = "";
-		this._isLoading = false;
+		this.socialId = null;
+		this.socialNetwork = null;
+		this.connected = false;
+		this.clientKey = clientKey;
+		this.saltrUserId = "";
+		this.isLoading = false;
 
-		this._activeFeatures = {};
-		this._developerFeatures = {};
+		this.activeFeatures = {};
+		this.developerFeatures = {};
 
-		this._experiments = [];
-		this._levelPacks = [];
+		this.experiments = [];
+		this.levelPacks = [];
 
-		this._appDataLoadSuccessCallback = null;
-		this._appDataLoadFailCallback = null;
-		this._levelContentLoadSuccessCallback = null;
-		this._levelContentLoadFailCallback = null;
+		this.appDataLoadSuccessCallback = null;
+		this.appDataLoadFailCallback = null;
+		this.levelContentLoadSuccessCallback = null;
+		this.levelContentLoadFailCallback = null;
 
-		this._requestIdleTimeout = 0;
+		this.requestIdleTimeout = 0;
 
-		this._devMode = true;
-		this._appVersion = "";
-		this._started = false;
-		this._useNoLevels = false;
-		this._useNoFeatures = false;
+		this.devMode = true;
+		this.appVersion = "";
+		this.started = false;
+		this.useNoLevels = false;
+		this.useNoFeatures = false;
 	};
 
 	SALTR.SaltrWeb.prototype = new SALTR.EventDispatcher();
 
 	SALTR.Utils.extend(SALTR.SaltrWeb.prototype, {
 
-		appVersion: function(appVersion) {
-			if (typeof appVersion != "undefined") {
-				this._appVersion = appVersion;
-			}
-			return this._appVersion;
-		},
-
-		connected: function(connected) {
-			if (typeof connected != "undefined") {
-				this._connected = connected;
-			}
-			return this._connected;
-		},
-
-		useNoLevels: function(useNoLevels) {
-			if (typeof useNoLevels != "undefined") {
-				this._useNoLevels = useNoLevels;
-			}
-			return this._useNoLevels;
-		},
-
-		useNoFeatures: function(useNoFeatures) {
-			if (typeof useNoFeatures != "undefined") {
-				this._useNoFeatures = useNoFeatures;
-			}
-			return this._useNoFeatures;
-		},
-
-		requestIdleTimeout: function(requestIdleTimeout) {
-			if (typeof requestIdleTimeout != "undefined") {
-				this._requestIdleTimeout = requestIdleTimeout;
-			}
-			return this._requestIdleTimeout;
-		},
-
-		levelPacks: function(levelPacks) {
-			if (typeof levelPacks != "undefined") {
-				this._levelPacks = levelPacks;
-			}
-			return this._levelPacks;
-		},
-
-		experiments: function(experiments) {
-			if (typeof experiments != "undefined") {
-				this._experiments = experiments;
-			}
-			return this._experiments;
-		},
-
 		setSocial: function(socialId, socialNetwork) {
 			if (typeof socialId == "undefined" || typeof socialNetwork == "undefined") {
 				throw new Error("Both variables - 'socialId' and 'socialNetwork' are required and should be non 'null'.");
 			}
 
-			this._socialId = socialId;
-			this._socialNetwork = socialNetwork;
+			this.socialId = socialId;
+			this.socialNetwork = socialNetwork;
 		},
 
 		getActiveFeatureTokens: function() {
 			var tokens = [],
-				activeFeatures = this._activeFeatures;
+				activeFeatures = this.activeFeatures;
 			for (var x in activeFeatures) {
 				if (activeFeatures.hasOwnProperty(x)) {
 					tokens.push(activeFeatures[x].token());
@@ -105,13 +56,13 @@
 		},
 
 		getFeatureProperties: function(token) {
-			var activeFeature = this._activeFeatures[token],
+			var activeFeature = this.activeFeatures[token],
 				devFeature;
 			if (typeof activeFeature != "undefined") {
 				return activeFeature.properties();
 			}
 			else {
-				devFeature = this._developerFeatures[token];
+				devFeature = this.developerFeatures[token];
 				if (typeof devFeature != "undefined" && devFeature.required) {
 					return devFeature.properties();
 				}
@@ -126,18 +77,18 @@
 
 		importLevelPacksFromJSON: function(json) {
             var applicationData = typeof json == "string" ? JSON.parse(json) : json;
-            this._levelPacks = SALTR.Deserializer.decodeLevels(applicationData);
+            this.levelPacks = SALTR.Deserializer.decodeLevels(applicationData);
         },
 
 		importDeveloperFeaturesFromJSON: function(json) {
 			var featuresJSON = JSON.parse(json);
-			this._developerFeatures = SALTR.Deserializer.decodeFeatures(featuresJSON);
+			this.developerFeatures = SALTR.Deserializer.decodeFeatures(featuresJSON);
 		},
 
         defineFeature: function(token, properties, required) {
 	        required = required || false;
-	        if (this._started === false) {
-		        this._developerFeatures[token] = new SALTR.Feature(token, properties, required);
+	        if (this.started === false) {
+		        this.developerFeatures[token] = new SALTR.Feature(token, properties, required);
 	        }
             else {
 		        throw new Error("Method 'defineFeature()' should be called before 'start()' only.");
@@ -145,39 +96,39 @@
         },
 
 		start: function() {
-			if (this._socialId == null || this._socialNetwork == null) {
+			if (this.socialId == null || this.socialNetwork == null) {
 				throw new Error("'socialId' and 'socialNetwork' fields are required and can't be null.");
 			}
 
-			if (this._useNoFeatures == false && SALTR.Utils.getObjectSize(this._developerFeatures) == 0) {
+			if (this.useNoFeatures == false && SALTR.Utils.getObjectSize(this.developerFeatures) == 0) {
 				throw new Error("Features should be defined.");
 			}
 
-			if (this._useNoLevels == false && this._levelPacks.length == 0) {
+			if (this.useNoLevels == false && this.levelPacks.length == 0) {
 				throw new Error("Levels should be imported.");
 			}
 
-			for (var i in this._developerFeatures) {
-				if (this._developerFeatures.hasOwnProperty(i)) {
-					this._activeFeatures[i] = this._developerFeatures[i];
+			for (var i in this.developerFeatures) {
+				if (this.developerFeatures.hasOwnProperty(i)) {
+					this.activeFeatures[i] = this.developerFeatures[i];
 				}
 			}
 
-			this._started = true;
+			this.started = true;
 		},
 
 		connect: function(successCallback, failCallback) {
 			var self = this,
 				resource;
 
-			if (this._isLoading || !this._started) {
+			if (this.isLoading || !this.started) {
 				return;
 			}
 
-			this._appDataLoadSuccessCallback = successCallback;
-			this._appDataLoadFailCallback = failCallback;
+			this.appDataLoadSuccessCallback = successCallback;
+			this.appDataLoadFailCallback = failCallback;
 
-			this._isLoading = true;
+			this.isLoading = true;
 
 			resource = this.createAppDataResource();
 			resource.addEventListener(SALTR.ResourceEvent.COMPLETE, function(event, resource) {
@@ -195,15 +146,15 @@
 				ticket;
 
 			urlVars.cmd = SALTR.Config.CMD_APP_DATA;
-			if (this._socialId != null && this._socialNetwork != null) {
-				args.socialId = this._socialId;
-				args.socialNetwork = this._socialNetwork;
+			if (this.socialId != null && this.socialNetwork != null) {
+				args.socialId = this.socialId;
+				args.socialNetwork = this.socialNetwork;
 			}
 			else {
 				throw new Error("In SALTR for Web 'socialId' and 'socialNetwork' are required fields.");
 			}
 
-			args.clientKey = this._clientKey;
+			args.clientKey = this.clientKey;
 			urlVars.args = JSON.stringify(args);
 
 			ticket = new SALTR.ResourceTicket(SALTR.Config.SALTR_API_URL, SALTR.Utils.serializeURLVariables(urlVars));
@@ -211,51 +162,51 @@
 		},
 
 		appDataAssetLoadCompleteHandler: function(resource) {
-			var data = resource.jsonData(),
+			var data = resource.getJsonData(),
 				status = data.status,
 				responseData = data.responseData;
 
-			this._isLoading = false;
+			this.isLoading = false;
 
-			if ( this._devMode ) {
+			if ( this.devMode ) {
 				this.syncDeveloperFeatures();
 			}
 
 			if (status == SALTR.Config.RESULT_SUCCEED) {
 				try {
-					this._activeFeatures = SALTR.Deserializer.decodeFeatures(responseData);
+					this.activeFeatures = SALTR.Deserializer.decodeFeatures(responseData);
 				}
 				catch (ex) {
 					throw new Error("[SALTR] Failed to decode Features.");
 				}
 
 				try {
-					this._experiments = SALTR.Deserializer.decodeExperiments(responseData);
+					this.experiments = SALTR.Deserializer.decodeExperiments(responseData);
 				}
 				catch (ex) {
 					throw new Error("[SALTR] Failed to decode Experiments.");
 				}
 
 				try {
-					this._levelPacks = SALTR.Deserializer.decodeLevels(responseData);
+					this.levelPacks = SALTR.Deserializer.decodeLevels(responseData);
 				}
 				catch (ex) {
 					throw new Error("[SALTR] Failed to decode LevelPacks.");
 				}
 
-				this._saltrUserId = responseData.saltId || responseData.saltrUserId;
-				this._connected = true;
+				this.saltrUserId = responseData.saltId || responseData.saltrUserId;
+				this.connected = true;
 
-				this._appDataLoadSuccessCallback();
+				this.appDataLoadSuccessCallback();
 			}
 			else {
-				this._appDataLoadFailCallback("[SALTR] Failed to load appData. " + responseData.errorCode + " " + responseData.errorMessage);
+				this.appDataLoadFailCallback("[SALTR] Failed to load appData. " + responseData.errorCode + " " + responseData.errorMessage);
 			}
 			resource.dispose();
 		},
 
 		appDataAssetLoadErrorHandler: function(resource) {
-			this._appDataLoadFailCallback("[SALTR] Failed to load appData.");
+			this.appDataLoadFailCallback("[SALTR] Failed to load appData.");
 			resource.dispose();
 		},
 
@@ -275,9 +226,9 @@
                 });
             }
 
-            args.saltId = this._saltrUserId;
+            args.saltId = this.saltrUserId;
             args.properties = properties;
-            args.clientKey = this._clientKey;
+            args.clientKey = this.clientKey;
 
             urlVars.cmd = SALTR.Config.COMMAND_ADD_PROPERTY;
             urlVars.arguments = JSON.stringify(args);
@@ -294,7 +245,7 @@
         },
 
         addUserPropertyCompleteHandler: function (resource) {
-	        var jsonData = resource.jsonData();
+	        var jsonData = resource.getJsonData();
 	        resource.dispose();
         },
 
@@ -306,25 +257,25 @@
         syncDeveloperFeatures: function() {
 	        var self = this,
 		        urlVars = {},
-		        features = this._developerFeatures,
+		        features = this.developerFeatures,
 		        feature,
 		        featureList = [],
 		        ticket,
 		        resource;
 
 	        urlVars.cmd = SALTR.Config.COMMAND_SAVE_OR_UPDATE_FEATURE;
-	        urlVars.clientKey = this._clientKey;
+	        urlVars.clientKey = this.clientKey;
 
-	        if (this._appVersion) {
-		        urlVars.appVersion = this._appVersion;
+	        if (this.appVersion) {
+		        urlVars.appVersion = this.appVersion;
 	        }
 
 	        for (var token in features) {
 		        if (features.hasOwnProperty(token)) {
 			        feature = features[token];
 			        featureList.push({
-				        token: feature.token(),
-				        value: JSON.stringify(feature.properties())
+				        token: feature.token,
+				        value: JSON.stringify(feature.properties)
 			        });
 		        }
 	        }
@@ -375,7 +326,7 @@
 		},
 
 		levelLoadCompleteHandler: function(level, resource) {
-			var jsonData = resource.jsonData();
+			var jsonData = resource.getJsonData();
 			level.updateContent(jsonData);
 			this._onLevelLoadSuccess();
 			resource.dispose();
