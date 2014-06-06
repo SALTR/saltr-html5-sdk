@@ -1,8 +1,8 @@
 (function(window) {
 	var SALTR = window.SALTR = window.SALTR || {};
 
-	SALTR.CompositeAsset = function(cellInfos, type, keys) {
-		SALTR.Asset.apply(this, [type, keys]);
+	SALTR.CompositeAsset = function(cellInfos, token, properties) {
+		SALTR.Asset.apply(this, [token, properties]);
 
 		this.cellInfos = cellInfos;
 	};

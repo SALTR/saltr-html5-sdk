@@ -57,7 +57,7 @@
 				jsonData = JSON.parse(this.jsonData);
 			}
 			catch (ex) {
-				throw new Error("[JSONAsset] JSON parsing Error. " + this.ticket.variables + " \n  " + data);
+				throw new Error("[JSONAsset] JSON parsing Error. " + this.ticket.variables + " \n  " + this.jsonData);
 			}
 			return jsonData;
 		},

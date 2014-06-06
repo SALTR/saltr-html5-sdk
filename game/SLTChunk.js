@@ -2,127 +2,111 @@
     var SALTR = window.SALTR = window.SALTR || {};
 
     SALTR.Chunk = function(layer, chunkCells, chunkAssetRules, levelSettings) {
-        this._layer = layer;
-        this._chunkCells = chunkCells;
-        this._chunkAssetRules = chunkAssetRules;
+        this.layer = layer;
 
-        this._availableCells = [];
-        this.assetMap = levelSettings.assetsMap;
-        this.stateMap = levelSettings.statesMap;
+        this.chunkCells = chunkCells;
+        this.chunkAssetRules = chunkAssetRules;
+        this.assetMap = levelSettings.assetMap;
+        this.stateMap = levelSettings.stateMap;
 
-        this.generateCellContrent()
+        this.generateCellContent()
     };
 
     SALTR.Utils.extend(SALTR.Chunk.prototype, {
-        generateCellContrent: function () {
-            this._availableCells = this._chunkCells.concat();
+        generateCellContent: function () {
+            var availableCells = this.chunkCells.concat(),
+                assetRules = {
+                    count: [],
+                    ratio: [],
+                    random: []
+                },
+                assetRule,
+                assetDistributionType;
 
-            var countChunkAssetRules = [];
-            var ratioChunkAssetRules = [];
-            var randomChunkAssetRules = [];
-
-            for (var i = 0; i < this._chunkAssetRules.length; i++) {
-                var assetRule = this._chunkAssetRules[i];
-                switch (assetRule.distributionType) {
-                    case "count":
-                        countChunkAssetRules.push(assetRule);
-                        break;
-
-                    case "ratio":
-                        ratioChunkAssetRules.push(assetRule);
-                        break;
-
-                    case "random":
-                        randomChunkAssetRules.push(assetRule);
-                        break;
-                }
+            for (var i = 0, iLength = this.chunkAssetRules.length; i < iLength; i++) {
+                assetRule = this.chunkAssetRules[i];
+                assetDistributionType = assetRule.distributionType;
+                assetRules[assetDistributionType] && assetRules[assetDistributionType].push(assetRule);
             }
 
-            if (countChunkAssetRules.length > 0) {
-                this.generateAssetInstancesByCount(countChunkAssetRules);
+            if (assetRules.count.length > 0) {
+                this.generateAssetInstancesByCount(assetRules.count, availableCells);
             }
-            if (ratioChunkAssetRules.length > 0) {
-                this.generateAssetInstancesByRatio(ratioChunkAssetRules);
+            if (assetRules.ratio.length > 0) {
+                this.generateAssetInstancesByRatio(assetRules.ratio, availableCells);
             }
-            else if (randomChunkAssetRules.length > 0) {
-                this.generateAssetInstancesRandomly(randomChunkAssetRules);
+            else if (assetRules.random.length > 0) {
+                this.generateAssetInstancesRandomly(assetRules.random, availableCells);
             }
         },
 
-        generateAssetInstances: function (count, assetId, stateId) {
-            var asset = this.assetMap[assetId];
-            var state = this.stateMap[stateId];
-
-            var randCell;
-            var randCellIndex;
-
-            for (var i = 0; i < count; i++) {
-                randCellIndex = Math.round(Math.random() * this._availableCells.length - 1);
-                randCell = this._availableCells[randCellIndex];
-                randCell.setAssetInstance(this._layer.layerId, this._layer.layerIndex, new SLTAssetInstance(asset.token, state, asset.properties));
-
-                this._availableCells.splice(randCellIndex, 1);
-                if (this._availableCells.length == 0) {
-                    return;
-                }
+        generateAssetInstancesByCount: function (countAssetRules, availableCells) {
+            for (var i = 0, iLength = countAssetRules.length; i < iLength; i++) {
+                var assetRule = countAssetRules[i];
+                this.generateAssetInstances(assetRule.distributionValue, assetRule.assetId, assetRule.stateId, availableCells);
             }
         },
 
-        generateAssetInstancesByCount: function (countChunkAssetRules) {
-            for (var i = 0; i < countChunkAssetRules.length; i++) {
-                var assetRule = countChunkAssetRules[i];
-                this.generateAssetInstances(assetRule.distributionValue, assetRule.assetId, assetRule.stateId);
-            }
-        },
+        generateAssetInstancesByRatio: function (ratioAssetRules, availableCells) {
+            var availableCellsNum = availableCells.length,
+                assetRule,
+                ratioSum = 0,
+                proportion;
 
-        generateAssetInstancesByRatio: function (ratioChunkAssetRules) {
-            var ratioSum = 0;
-            var len = ratioChunkAssetRules.length;
-            var assetRule;
-
-            for (var i = 0; i < len; ++i) {
-                assetRule = ratioChunkAssetRules[i];
+            for (var i = 0, iLength = ratioAssetRules.length; i < iLength; i++) {
+                assetRule = ratioAssetRules[i];
                 ratioSum += assetRule.distributionValue;
             }
 
-            var availableCellsNum = this._availableCells.length;
-            var proportion;
-            var count;
-
             var fractionAssets = [];
             if (ratioSum != 0) {
-                for (var j = 0; j < len; j++) {
-                    assetRule = ratioChunkAssetRules[j];
+                for (var j = 0, jLength = ratioAssetRules.length; j < jLength; j++) {
+                    assetRule = ratioAssetRules[j];
                     proportion = assetRule.distributionValue / ratioSum * availableCellsNum;
-                    count = proportion; //assigning number to int to floor the value;
-                    fractionAssets.push({fraction: proportion - count, assetRule: assetRule});
-                    this.generateAssetInstances(count, assetRule.assetId, assetRule.stateId);
+                    fractionAssets.push({fraction: proportion % 1, assetRule: assetRule});
+                    this.generateAssetInstances(Math.floor(proportion), assetRule.assetId, assetRule.stateId, availableCells);
                 }
+                fractionAssets.sort( function (a, b) { return b.fraction - a.fraction } );
 
-                fractionAssets.sortOn("fraction", Array.DESCENDING);
-                availableCellsNum = _availableCells.length;
-
-                for (var k = 0; k < availableCellsNum; k++) {
-                    this.generateAssetInstances(1, fractionAssets[k].assetRule.assetId, fractionAssets[k].assetRule.stateId);
+                for (j = 0, jLength = availableCells.length; j < jLength; j++) {
+                    this.generateAssetInstances(1, fractionAssets[j].assetRule.assetId, fractionAssets[j].assetRule.stateId, availableCells);
                 }
             }
         },
 
-        generateAssetInstancesRandomly: function (randomChunkAssetRules) {
-            var len = randomChunkAssetRules.length;
-            var availableCellsNum = this._availableCells.length;
-            if (len > 0) {
-                var assetConcentration = availableCellsNum > len ? availableCellsNum / len : 1;
-                var minAssetCount = assetConcentration <= 2 ? 1 : assetConcentration - 2;
-                var maxAssetCount = assetConcentration == 1 ? 1 : assetConcentration + 2;
-                var lastChunkAssetIndex = len - 1;
+        generateAssetInstancesRandomly: function (randomAssetRules, availableCells) {
+            var assetsCount = randomAssetRules.length,
+                availableCellsNum = availableCells.length;
 
-                var chunkAssetRule;
-                var count;
-                for (var i = 0; i < len && _availableCells.length > 0; i++) {
-                    chunkAssetRule = randomChunkAssetRules[i];
-                    count = i == lastChunkAssetIndex ? this._availableCells.length : SALTR.Utils.randomWithin(minAssetCount, maxAssetCount);
-                    this.generateAssetInstances(count, chunkAssetRule.assetId, chunkAssetRule.stateId);
+            if (assetsCount > 0) {
+                var assetConcentration = availableCellsNum > assetsCount ? availableCellsNum / assetsCount : 1,
+                    minAssetCount = assetConcentration <= 2 ? 1 : assetConcentration - 2,
+                    maxAssetCount = assetConcentration == 1 ? 1 : assetConcentration + 2,
+                    assetRule,
+                    count;
+
+                for (var i = 0; i < assetsCount && availableCells.length > 0; i++) {
+                    assetRule = randomAssetRules[i];
+                    count = i == assetsCount - 1 ? availableCells.length : SALTR.Utils.randomWithin(minAssetCount, maxAssetCount);
+                    this.generateAssetInstances(count, assetRule.assetId, assetRule.stateId, availableCells);
+                }
+            }
+        },
+
+        generateAssetInstances: function (count, assetId, stateId, availableCells) {
+            var asset = this.assetMap[assetId],
+                state = this.stateMap[stateId],
+                randCellIndex,
+                randCell;
+
+            for (var i = 0; i < count; i++) {
+                randCellIndex = Math.round(Math.random() * (availableCells.length - 1));
+                randCell = availableCells[randCellIndex];
+                randCell.setAssetInstance(this.layer.layerId, this.layer.layerIndex, new SALTR.AssetInstance(asset.token, state, asset.properties));
+
+                availableCells.splice(randCellIndex, 1);
+                if (availableCells.length == 0) {
+                    return;
                 }
             }
         }

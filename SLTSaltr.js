@@ -308,11 +308,11 @@
 				ticket,
 				resource;
 
-			this._onLevelLoadSuccess = levelLoadCompleteHandler;
-			this._onLevelLoadFail = levelLoadFailedHandler;
+			this.onLevelLoadSuccess = levelLoadCompleteHandler;
+			this.onLevelLoadFail = levelLoadFailedHandler;
 
             //TODO:ggor Remove this replace
-			var levelUrl = level._contentDataUrl.replace(":8081", ":8085");
+            var levelUrl = level.contentUrl.replace(":8081", ":8085");
 
 			ticket = new SALTR.ResourceTicket(levelUrl);
 			resource = new SALTR.Resource("loadLevel", ticket);
@@ -328,12 +328,12 @@
 		levelLoadCompleteHandler: function(level, resource) {
 			var jsonData = resource.getJsonData();
 			level.updateContent(jsonData);
-			this._onLevelLoadSuccess();
+			this.onLevelLoadSuccess();
 			resource.dispose();
 		},
 
 		levelLoadFailedHandler: function(resource) {
-			this._onLevelLoadFail();
+			this.onLevelLoadFail();
 			resource.dispose();
 		}
 
