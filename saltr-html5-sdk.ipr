@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="Javac" />
-    <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="?*.properties" />
       <entry name="?*.xml" />
@@ -15,24 +13,23 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
     </wildcardResourcePatterns>
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
-      </profile>
-    </annotationProcessing>
   </component>
-  <component name="CopyrightManager" default="">
-    <module2copyright />
-  </component>
+  <component name="CopyrightManager" default="" />
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="IdProvider" IDEtalkID="20E46B10D66806FBAD756692C5CEBF72" />
+  <component name="InspectionProjectProfileManager">
+    <profile version="1.0">
+      <option name="myName" value="Project Default" />
+    </profile>
+    <version value="1.0" />
+  </component>
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{Node.js v0.10.28 Core Modules}" />
     <excludedPredefinedLibrary name="HTML" />
-    <excludedPredefinedLibrary name="HTML5 / EcmaScript 5" />
+  </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
   </component>
   <component name="Palette2">
     <group name="Swing">
@@ -160,7 +157,7 @@
       <module fileurl="file://$PROJECT_DIR$/saltr-html5-sdk.iml" filepath="$PROJECT_DIR$/saltr-html5-sdk.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ProjectTasksOptions">
@@ -185,39 +182,21 @@
       <envs />
     </TaskOptions>
   </component>
+  <component name="ThriftCompiler">
+    <compilers />
+  </component>
+  <component name="TypeScriptCompiler">
+    <option name="showAllErrors" value="true" />
+  </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
   </component>
   <component name="libraryTable">
     <library name="Generated files" type="javaScript">
-      <properties>
-        <sourceFilesUrls>
-          <item url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTFeature.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTDevice.min.js" />
-          <item url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
-          <item url="file://$PROJECT_DIR$/resource/SLTTransport.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTPartner.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTCompositeAsset.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTTimer.min.js" />
-          <item url="file://$PROJECT_DIR$/resource/SLTResource.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTLevelSettings.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTLevelPack.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTLevelBoardParser.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTLevel.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTUtils.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTDeserializer.min.js" />
-          <item url="file://$PROJECT_DIR$/game/SLTAsset.min.js" />
-          <item url="file://$PROJECT_DIR$/SLTConfig.min.js" />
-        </sourceFilesUrls>
-      </properties>
       <CLASSES>
         <root url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
         <root url="file://$PROJECT_DIR$/SLTSaltr.min.js" />
         <root url="file://$PROJECT_DIR$/SLTFeature.min.js" />
-        <root url="file://$PROJECT_DIR$/SLTSaltrWeb.min.js" />
         <root url="file://$PROJECT_DIR$/SLTDevice.min.js" />
         <root url="file://$PROJECT_DIR$/resource/SLTResourceTicket.min.js" />
         <root url="file://$PROJECT_DIR$/SLTEventDispatcher.min.js" />
@@ -240,4 +219,3 @@
     </library>
   </component>
 </project>
-
