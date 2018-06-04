@@ -6,15 +6,10 @@ import {SLTResource} from "../../resource/SLTResource";
 import {SLTLevelContentApiCall} from "./SLTLevelContentApiCall";
 
 class SLTApiCall {
-    public static readonly MOBILE_CLIENT: string = "AS3-Mobile";
-    public static readonly WEB_CLIENT: string = "AS3-Web";
-    public static readonly API_VERSION: string = "1.9.0";
-
     protected _url: string;
     protected _params: any;
     protected _successCallback: (...args: any[]) => void;
     protected _failCallback: (...args: any[]) => void;
-    protected _client: string;
 
     public static removeEmptyAndNullsJSONReplacer(k: any, v: any): any {
         if (v != null && v != "null" && v !== "") {
@@ -32,7 +27,6 @@ class SLTApiCall {
     }
 
     public constructor() {
-        this._client = SLTApiCall.WEB_CLIENT;
     }
 
     public call(params: any, successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null,
@@ -115,9 +109,9 @@ class SLTApiCall {
         let args: any = {};
 
         args.socialId = this._params.socialId;
-        args.apiVersion = SLTApiCall.API_VERSION;
+        args.apiVersion = "1.9.0";
         args.clientKey = this._params.clientKey;
-        args.client = this._client;
+        args.client = "html5";
         args.devMode = this._params.devMode;
         return args;
     }
