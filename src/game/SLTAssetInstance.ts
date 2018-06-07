@@ -8,12 +8,13 @@ export class SLTAssetInstance {
     private readonly _token:string;
     private readonly _state:SLTAssetState;
     private readonly _properties:any;
+    private readonly _positions: any[];
 
-
-    constructor(token: string, state: SLTAssetState, properties: any) {
+    constructor(token: string, state: SLTAssetState, properties: any, positions: any[] = null) {
         this._token = token;
         this._state = state;
         this._properties = properties;
+        this._positions = positions;
     }
 
     get token(): string {
@@ -26,5 +27,9 @@ export class SLTAssetInstance {
 
     get properties(): any {
         return this._properties;
+    }
+
+    get positions(): any[] {
+        return this._positions;
     }
 }

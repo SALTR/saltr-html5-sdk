@@ -2,34 +2,58 @@ class SLTFeature {
 
     private readonly _token: string;
     private readonly _type: string;
-    private readonly _properties: any;
-    private readonly _required: boolean;
+    private _body:any;
+    private readonly _isRequired:boolean;
+    private _version:string;
+    private _disabled:boolean;
 
-    public constructor(token: string, type: string, properties: any = null, required: boolean = false) {
+
+    constructor(token: string, type: string, version: string, body: any = null, isRequired: boolean = false) {
         this._token = token;
         this._type = type;
-        this._properties = properties;
-        this._required = required;
+        this._body = body;
+        this._isRequired = isRequired;
+        this._version = version;
+        this._disabled = false;
     }
 
-    public get token(): string {
-        return this._token || '';
+    get token(): string {
+        return this._token;
     }
 
-    public get type(): string {
-        return this._type || '';
+    get type(): string {
+        return this._type;
     }
 
-    public get properties(): any {
-        return this._properties;
+    get body(): any {
+        return this._body;
     }
 
-    public get required(): boolean {
-        return this._required || false;
+    get isRequired(): boolean {
+        return this._isRequired;
     }
 
-    public toString(): string {
-        return "[SALTR] Feature { token : " + this._token + ", value : " + this._properties + "}";
+    get version(): string {
+        return this._version;
+    }
+
+    get disabled(): boolean {
+        return this._disabled;
+    }
+
+    set disabled(value: boolean) {
+        this._disabled = this._isRequired ? false : value;
+    }
+
+    toString(): string {
+        return "[SALTR] Feature { token : " + this._token + ", value : " + this._body + "}";
+    }
+
+    update(version:string, newBody:any = null):void {
+        this._version = version;
+        if (newBody != null) {
+            this._body = newBody;
+        }
     }
 }
 

@@ -10,12 +10,13 @@ export class SLTMatchingBoard extends SLTBoard {
 
     /**
      * Class constructor.
+     * @param token
      * @param config The board configuration.
      * @param propertyObjects The board associated properties.
      * @param checkpoints The board checkpoints.
      */
-    constructor(config:SLTMatchingBoardConfig, propertyObjects:Dictionary<any>, checkpoints:Dictionary<any>) {
-        super(config.layers, propertyObjects, checkpoints);
+    constructor(token:string, config:SLTMatchingBoardConfig, propertyObjects:Dictionary<any>, checkpoints:Dictionary<any>) {
+        super(token, config.layers, propertyObjects, checkpoints);
         this._config = config;
     }
 
@@ -41,9 +42,9 @@ export class SLTMatchingBoard extends SLTBoard {
     }
 
     public regenerate():void {
-        for (var layerToken in this._config.layers) {
-            var layer:SLTMatchingBoardLayer = this._config.layers[layerToken] as SLTMatchingBoardLayer;
-            var generator:SLTMatchingBoardGeneratorBase = SLTMatchingBoardGeneratorBase.getGenerator(this._config, layer);
+        for (const layerToken in this._config.layers) {
+            const layer: SLTMatchingBoardLayer = this._config.layers[layerToken] as SLTMatchingBoardLayer;
+            const generator: SLTMatchingBoardGeneratorBase = SLTMatchingBoardGeneratorBase.getGenerator(this._config, layer);
             generator.generate(this._config, layer);
         }
     }

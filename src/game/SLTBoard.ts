@@ -17,13 +17,15 @@ class SLTBoard {
 
     protected _propertyObjects: Dictionary<any>;
     protected _layers: Dictionary<any>;
-    private _checkpoints: Dictionary<any>;
+    private readonly _checkpoints: Dictionary<any>;
+    private readonly _token: string;
 
 
-    constructor(propertyObjects: Dictionary<any>, layers: Dictionary<any>, checkpoints: Dictionary<any>) {
+    constructor(token:string, layers:Dictionary<any>, propertyObjects:Dictionary<any>, checkpoints:Dictionary<any>) {
         this._propertyObjects = propertyObjects;
         this._layers = layers;
         this._checkpoints = checkpoints;
+        this._token = token;
     }
 
     /**
@@ -73,6 +75,10 @@ class SLTBoard {
      */
     public regenerate(): void {
         throw new Error("Virtual function call: regenerate");
+    }
+
+    get token(): string {
+        return this._token;
     }
 }
 

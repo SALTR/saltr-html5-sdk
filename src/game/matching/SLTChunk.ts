@@ -218,26 +218,22 @@ export class SLTChunk {
     }
 
     private getCellWithPosition(col: number, row: number): SLTCell {
-        let cellToReturn: SLTCell = null;
         for (const key in this._chunkCells) {
             const value = this._chunkCells[key];
             if (col == value.col && row == value.row) {
-                cellToReturn = value;
-                break;
+               return value;
             }
         }
-        return cellToReturn;
+        return null;
     }
 
     private getCellIndexWithPosition(col: number, row: number): number {
-        let indexToReturn: number = -1;
         for (let i: number = 0, length: number = this._chunkCells.length; i < length; ++i) {
             const cell: SLTCell = this._chunkCells[i];
             if (col == cell.col && row == cell.row) {
-                indexToReturn = i;
-                break;
+               return i;
             }
         }
-        return indexToReturn;
+        return -1;
     }
 }

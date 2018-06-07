@@ -186,6 +186,8 @@
     <compilers />
   </component>
   <component name="TypeScriptCompiler">
+    <option name="enableServiceForProjectsWithoutConfig" value="true" />
+    <option name="recompileOnChanges" value="true" />
     <option name="showAllErrors" value="true" />
   </component>
   <component name="VcsDirectoryMappings">

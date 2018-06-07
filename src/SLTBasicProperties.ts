@@ -27,6 +27,17 @@ class SLTBasicProperties {
     private _location: string;       //The location (latitude/longitude) of the user. E.g. 37.775,-122.4183.
     //Set to (locate) to detect the location based on the IP address of the caller.
 
+    private _paying: boolean;        //The flag indicating is the user paying or not.
+    
+    constructor(appVersion:string, locale:string) {
+        this._appVersion = appVersion;
+        this._locale = locale;
+        this._country = "locate";
+        this._region = "locate";
+        this._city = "locate";
+        this._location = "locate";
+    }
+
 
     get age(): string {
         return this._age;
@@ -138,6 +149,14 @@ class SLTBasicProperties {
 
     set location(value: string) {
         this._location = value;
+    }
+
+    get paying(): boolean {
+        return this._paying;
+    }
+
+    set paying(value: boolean) {
+        this._paying = value;
     }
 }
 

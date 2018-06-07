@@ -9,10 +9,6 @@ import {SLTAssetInstance} from "../SLTAssetInstance";
 
 export class SLTMatchingBoardRulesEnabledGenerator extends SLTMatchingBoardGeneratorBase {
     private static INSTANCE: SLTMatchingBoardRulesEnabledGenerator;
-    // Board generation try count without breaking asset distribution rules
-    private static TRY_COUNT_BREAKING_RULES_DISABLED: number = 2;
-    // Board generation try count with breaking asset distribution rules except distribution by count
-    private static TRY_COUNT_BREAKING_RULES_ENABLED: number = 2;
 
     private _boardConfig: SLTMatchingBoardConfig;
     private _layer: SLTMatchingBoardLayer;
@@ -37,7 +33,7 @@ export class SLTMatchingBoardRulesEnabledGenerator extends SLTMatchingBoardGener
         }
         super.parseFixedAssets(layer, this._boardConfig.cells, this._boardConfig.assetMap);
         this.parseMatchingRuleDisabledChunks();
-        this.runGenerationTires(layer);
+        this.generateLayer(layer);
     }
 
     private parseMatchingRuleDisabledChunks(): void {
@@ -65,47 +61,16 @@ export class SLTMatchingBoardRulesEnabledGenerator extends SLTMatchingBoardGener
         return chunks;
     }
 
-    private runGenerationTires(layer: SLTMatchingBoardLayer): void {
-        // Tire 1 - Try to generate board without breaking asset distribution rules.
-        for (let tier_1_i: number = 0; tier_1_i < SLTMatchingBoardRulesEnabledGenerator.TRY_COUNT_BREAKING_RULES_DISABLED; ++tier_1_i) {
-            this._matchedAssetPositions.length = 0;
-            this.generateWithDisabledBreakingRules(layer);
-            if (this._matchedAssetPositions.length <= 0) {
-                return; // Target reached. There is no need to go to next tire.
-            }
-        }
-        // Tire 2 - Try generate board with breaking rules.
-        for (let tier_2_i: number = 0; tier_2_i < SLTMatchingBoardRulesEnabledGenerator.TRY_COUNT_BREAKING_RULES_ENABLED; ++tier_2_i) {
-            this._matchedAssetPositions.length = 0;
-            this.generateWithEnabledBreakingRules(layer);
-            if (this._matchedAssetPositions.length <= 0) {
-                return; // Target reached. There is no need to go to next tire.
-            }
-        }
-        // Tire 3 - Breaking matching rules board generation.
+    private generateLayer(layer:SLTMatchingBoardLayer):void {
         this._matchedAssetPositions.length = 0;
-        this.generateWithForceEnabled(layer);
-    }
-
-    /*
-     Board generation without breaking asset distribution rules
-     */
-    private generateWithDisabledBreakingRules(layer: SLTMatchingBoardLayer): void {
         this.generateAssetData(this.getMatchingRuleEnabledChunks(layer));
         this.fillLayerChunkAssetsWithMatchingRules();
-    }
-
-    /*
-     Board generation with breaking asset distribution rules except distribution by count
-     */
-    private generateWithEnabledBreakingRules(layer: SLTMatchingBoardLayer): void {
-        this.generateWithDisabledBreakingRules(layer);
-        this.correctChunksMatchesWithChunkAssets();
-    }
-
-    private generateWithForceEnabled(layer: SLTMatchingBoardLayer): void {
-        this.generateWithEnabledBreakingRules(layer);
-        this.fillLayerMissingChunkAssetsWithoutMatchingRules(layer);
+        if (this._matchedAssetPositions.length > 0) {
+            this.correctChunksMatchesWithChunkAssets();
+        }
+        if (this._matchedAssetPositions.length > 0) {
+            this.fillLayerMissingChunkAssetsWithoutMatchingRules(layer);
+        }
     }
 
     private fillLayerMissingChunkAssetsWithoutMatchingRules(layer: SLTMatchingBoardLayer): void {
@@ -130,10 +95,9 @@ export class SLTMatchingBoardRulesEnabledGenerator extends SLTMatchingBoardGener
     private correctChunksMatchesWithChunkAssets(): void {
         let correctionAssets: SLTChunkAssetDatum[];
         let appendingResult: Boolean = false;
-        const matchedAssetPositions: MatchedAssetPosition[] = this._matchedAssetPositions.concat();
 
-        for (let i: number = 0, positionsLength: number = matchedAssetPositions.length; i < positionsLength; ++i) {
-            const matchedCellPosition: MatchedAssetPosition = matchedAssetPositions[i];
+        for (let i: number = this._matchedAssetPositions.length - 1; i >= 0; --i) {
+            const matchedCellPosition: MatchedAssetPosition = this._matchedAssetPositions[i];
             const chunk: SLTChunk = this._layer.getChunkWithCellPosition(matchedCellPosition.col, matchedCellPosition.row);
             correctionAssets = chunk.uniqueInAvailableAssetData;
             for (let j: number = 0, assetsLength: number = correctionAssets.length; j < assetsLength; ++j) {

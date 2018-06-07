@@ -14,11 +14,11 @@ export class SLTBoardParser {
     constructor() {
     }
 
-    parseAssetState(stateNode:any):void {
+    parseAssetState(stateNode:any):SLTAssetState {
         throw new Error("[SALTR: ERROR] parseAssetState() is virtual method.");
     }
 
-    parseBoardContent(rootNode:any, assetMap:Dictionary<any>):void {
+    parseBoardContent(rootNode:any, assetMap:Dictionary<any>):Dictionary<any> {
         throw new Error("[SALTR: ERROR] parseBoardContent() is virtual method.");
     }
 

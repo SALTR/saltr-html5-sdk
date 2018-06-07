@@ -5,7 +5,7 @@ import {SLTStatus} from "./SLTStatus";
 
 class SLTStatusExperimentsParseError extends SLTStatus {
    constructor() {
-        super(SLTStatus.CLIENT_EXPERIMENTS_PARSE_ERROR, "[SALTR] Failed to decode Experiments.");
+        super('CLIENT_EXPERIMENTS_PARSE_ERROR', "[SALTR] Failed to decode Experiments.");
     }
 }
 

@@ -5,198 +5,194 @@ import {SLTStatus} from "./status/SLTStatus";
 import {SLTConfig} from "./SLTConfig";
 import {SLTAppData} from "./SLTAppData";
 import {SLTExperiment} from "./SLTExperiment";
-import {SLTLevelData} from "./SLTLevelData";
 import {SLTApiCallFactory} from "./api/call/SLTApiCallFactory";
 import {SLTApiCall} from "./api/call/SLTApiCall";
 import {SLTStatusAppDataConcurrentLoadRefused} from "./status/SLTStatusAppDataConcurrentLoadRefused";
 import {SLTStatusAppDataLoadFail} from "./status/SLTStatusAppDataLoadFail";
 import {Timer} from "./timer/Timer";
 import {TimerEvent} from "./timer/TimerEvent";
-import {SLTApiCallResult} from "./api/call/SLTApiCallResult";
-import {SLTStatusAppDataParseError} from "./status/SLTStatusAppDataParseError";
-import {SLTStatusLevelsParseError} from "./status/SLTStatusLevelsParseError";
-import {SLTStatusLevelContentLoadFail} from "./status/SLTStatusLevelContentLoadFail";
+import {SLTLevelCollectionBody} from "./SLTLevelCollectionBody";
+import {SLTContext} from "./SLTContext";
 
 class SLTSaltr {
-    private readonly _socialId: string;
-    private _platform: string;
-    private _connected:boolean;
+    private _socialId: string;
+    private _deviceId: string;
     private readonly _clientKey: string;
-    private _isLoading: boolean;
+    private _isWaitingForAppData: boolean;
+
+    private _basicProperties: SLTBasicProperties;
+    private _customProperties: any;
+    private _logger: SLTLogger;
+
+    private _nativeTimeout: number;
+    private _dropTimeout: number;
+    private _timeoutIncrease: number;
+    private _devMode: boolean;
+
+    private _appData: SLTAppData;
+
+    private _heartbeatTimer: Timer;
+    private _heartBeatTimerStarted: boolean;
 
     private _connectSuccessCallback: (...args: any[]) => void;
     private _connectFailCallback: (...args: any[]) => void;
-    private _levelContentLoadSuccessCallback: (...args: any[]) => void;
-    private _levelContentLoadFailCallback: (...args: any[]) => void;
-
-    private _requestIdleTimeout:number;
-    private readonly _devMode: boolean;
-    private readonly _started: boolean;
-    private _isSynced: boolean;
-    private readonly _useNoLevels: boolean;
-    private _useNoFeatures: boolean;
-
-    private readonly _appData: SLTAppData;
-    private readonly _levelData: SLTLevelData;
-
-    private _heartbeatTimer: Timer;
-    private  _heartBeatTimerStarted: boolean;
 
     /**
      * Class constructor.
      * @param clientKey The client key.
+     * @param deviceId
      * @param socialId The social identifier.
      */
-    constructor(clientKey:string, socialId:string) {
+    constructor(clientKey: string, deviceId: string = null, socialId: string = null) {
         this._clientKey = clientKey;
+        this._deviceId = deviceId;
         this._socialId = socialId;
-        this._isLoading = false;
-        this._connected = false;
-        this._useNoLevels = false;
-        this._useNoFeatures = false;
+
         this._heartBeatTimerStarted = false;
-
         this._devMode = false;
-        this._started = false;
-        this._isSynced = false;
-        this._requestIdleTimeout = 0;
-
+        this._nativeTimeout = 0;
+        this._dropTimeout = 0;
+        this._timeoutIncrease = 0;
+        this._logger = SLTLogger.getInstance();
         this._appData = new SLTAppData();
-        this._levelData = new SLTLevelData();
     }
 
-    public get allLevels():SLTLevel[] {
-        return this._levelData.allLevels;
+
+    /**
+     * The dev mode state.
+     */
+    set devMode(value: boolean) {
+        this._devMode = value;
+        this._logger.debug = this._devMode;
     }
 
     /**
-     * The total levels number.
+     * The verbose logging state.
+     * Note: This works only in development mode
      */
-    public get allLevelsCount():number {
-        return this._levelData.allLevelsCount;
+    set verboseLogging(value: boolean) {
+        this._logger.verboseLogging = value;
+    }
+
+    /**
+     * The request idle timeout. Works on mobile platform only. For Web version dropTimeout should be used.
+     */
+    set nativeTimeout(value: number) {
+        this._nativeTimeout = value;
+    }
+
+    /**
+     * The request drop timeout.
+     */
+    set dropTimeout(value: number) {
+        this._dropTimeout = value;
+    }
+
+    /**
+     * The request progressive timeout.
+     */
+    set timeoutIncrease(value: number) {
+        this._timeoutIncrease = value;
     }
 
     /**
      * The experiments.
      */
-    public get experiments():SLTExperiment[] {
+    get experiments(): SLTExperiment[] {
         return this._appData.experiments;
     }
 
     /**
-     * Provides the level by provided global index.
-     * @param index The global index of the level.
-     * @return SLTLevel The level instance specified by index.
+     * The social identifier.
      */
-    public getLevelByGlobalIndex(index:number):SLTLevel {
-        return this._levelData.getLevelByGlobalIndex(index);
-    }
-
-    /**
-     * Provides active feature tokens.
-     */
-    public getActiveFeatureTokens():string[] {
-        return this._appData.getActiveFeatureTokens();
+    set socialId(socialId: string) {
+        this._socialId = socialId;
     }
 
     /**
      * Provides the feature properties by provided token.
      * @param token The unique identifier of the feature.
-     * @return Object The feature's properties.
+     * @return any The feature's properties.
      */
-    public getFeatureProperties(token:string):any {
-        return this._appData.getFeatureProperties(token);
+    getFeatureBody(token: string): any {
+        return this._appData.getFeatureBody(token);
     }
 
     /**
-     * Imports level from provided path.
-     * @param json The levels information containing JSON.
+     * Provides the game level feature properties by provided token.
+     * @param token The unique identifier of the feature
+     * @return SLTLevelCollectionBody The level data object.
      */
-    public importLevelsFromJSON(json:string):void {
-        if (this._useNoLevels) {
-            return;
-        }
+    getLevelCollectionFeatureBody(token: string): SLTLevelCollectionBody {
+        return this._appData.getLevelCollectionBody(token);
+    }
 
-        if (!this._started) {
-            const applicationData: any = JSON.parse(json);
-            this._levelData.initWithData(applicationData);
+    private canGetAppData(): boolean {
+        return !this._isWaitingForAppData;
+    }
+
+    start(): void {
+        //abstract...
+    }
+
+    private getAppDataFromSnapshot(): any {
+        //abstract...
+        return null;
+    }
+
+    initLevelContent(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void, fromSaltr: boolean = false): void {
+        sltLevel.contentReady = false;
+
+        if (fromSaltr) {
+            this.initLevelContentFromSaltr(levelCollectionToken, sltLevel, callback);
         } else {
-            throw new Error("Method 'importLevels()' should be called before 'start()' only.");
+            this.initLevelContentFromAvailableSource(levelCollectionToken, sltLevel, callback);
         }
     }
 
-    /**
-     * Define feature.
-     * @param token The unique identifier of the feature.
-     * @param properties The properties of the feature.
-     * @param required The required state of the feature.
-     */
-    public defineFeature(token:String, properties:Object, required:Boolean = false):void {
-//        if (this._useNoFeatures) {
-//            return;
-//        }
-//
-//        if (this._started == false) {
-//            this._appData.defineFeature(token, properties, required);
-//        } else {
-//            throw new Error("Method 'defineFeature()' should be called before 'start()' only.");
-//        }
+    clearLevelContent(sltLevel: SLTLevel): void {
+        sltLevel.clearContent();
     }
 
-    /**
-     * Starts the instance.
-     */
-    public start():void {
-//        if (this._socialId == null) {
-//            throw new Error("socialId field is required and can't be null.");
-//        }
-//        if (SLTUtils.getDictionarySize(this._appData.developerFeatures) == 0 && this._useNoFeatures == false) {
-//            throw new Error("Features should be defined.");
-//        }
-//        this._appData.initEmpty();
-//        this._started = true;
+    private initLevelContentFromAvailableSource(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
+        //override
+    }
+
+    private initLevelContentFromSaltr(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
+    }
+
+    sendLevelReport(successCallback: (...args: any[]) => void, failCallback: (...args: any[]) => void, properties: any): void {
+        const params: any = {
+            clientKey: this._clientKey,
+            deviceId: this._deviceId,
+            socialId: this._socialId,
+            levelReportEventProperties: properties
+        };
+
+        const levelReportApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_LEVEL_REPORT);
+        levelReportApiCall.call(params, successCallback, failCallback, this._dropTimeout);
     }
 
     /**
      * Establishes the connection to Saltr server.
      */
-    public connect(successCallback:(...args: any[]) => void, failCallback:(...args: any[]) => void,
-                   basicProperties:any = null, customProperties:any = null):void {
-        if (!this._started) {
-            throw new Error("Method 'connect()' should be called after 'start()' only.");
-        }
-
-        if (this._isLoading) {
+    connect(successCallback: (...args: any[]) => void, failCallback: (...args: any[]) => void, basicProperties: SLTBasicProperties, customProperties: any = null): void {
+        SLTLogger.getInstance().log("Method 'connect()' called.");
+        if (this.canGetAppData()) {
+            this._connectSuccessCallback = successCallback;
+            this._connectFailCallback = failCallback;
+            this.updateMissingProperties(basicProperties);
+            this._customProperties = customProperties;
+            this._basicProperties = basicProperties;
+            this.getAppData(this.appDataConnectSuccessHandler, this.appDataConnectFailHandler, false, this._basicProperties, this._customProperties);
+        } else {
+            SLTLogger.getInstance().log("Connect failed. Concurrent load accrues.");
             failCallback(new SLTStatusAppDataConcurrentLoadRefused());
-            return;
         }
-
-        this._connectSuccessCallback = successCallback;
-        this._connectFailCallback = failCallback;
-
-        this._isLoading = true;
-
-        const params: any = {
-            clientKey: this._clientKey,
-            devMode: this._devMode,
-            socialId: this._socialId,
-            basicProperties: basicProperties,
-            customProperties: customProperties
-        };
-        const appDataCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_APP_DATA);
-       // appDataCall.call(params, this.appDataApiCallback, this._requestIdleTimeout);
     }
 
-    /**
-     * Loads the level content.
-     * @param sltLevel The level.
-     * @param successCallback The success callback function.
-     * @param failCallback The fail callback function.
-     */
-    public loadLevelContent(sltLevel:SLTLevel, successCallback:(...args: any[]) => void, failCallback:(...args: any[]) => void):void {
-        this._levelContentLoadSuccessCallback = successCallback;
-        this._levelContentLoadFailCallback = failCallback;
-        this.loadLevelContentFromSaltr(sltLevel);
+    private updateMissingProperties(basicProperties: SLTBasicProperties): void {
+        //abstract....
     }
 
     /**
@@ -204,45 +200,52 @@ class SLTSaltr {
      * @param basicProperties The basic properties.
      * @param customProperties The custom properties.
      */
-    public addProperties(basicProperties:any = null, customProperties:any = null):void {
+    addProperties(basicProperties: any = null, customProperties: any = null): void {
         if (!basicProperties && !customProperties) {
             return;
         }
-
         const params: any = {
             clientKey: this._clientKey,
+            deviceId: this._deviceId,
             socialId: this._socialId,
             basicProperties: basicProperties,
             customProperties: customProperties
         };
         const addPropertiesApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_ADD_PROPERTIES);
-//        addPropertiesApiCall.call(params, addPropertiesApiCallback, this._requestIdleTimeout);
+        addPropertiesApiCall.call(params, this.addPropertiesSuccessHandler, this.addPropertiesFailHandler,  this._dropTimeout);
     }
 
-    /**
-     * Opens user registration dialog.
-     */
-    public registerUser():void {
-        if (!this._started) {
-            throw new Error("Method 'registerDevice()' should be called after 'start()' only.");
-        }
+    private addPropertiesSuccessHandler(data: any): void {
+        console.log("[SALTR] addPropertiesApiCallback() - succeeded.");
+    }
+
+    private addPropertiesFailHandler(status: SLTStatus): void {
+        console.log("[SALTR] addPropertiesApiCallback() - failed.");
+    }
+
+    private sendLevelEndSuccessHandler(data: any): void {
+        console.log("[SALTR] sendLevelEndSuccessHandler() - succeeded.");
+    }
+
+    private sendLevelEndFailHandler(status: SLTStatus): void {
+        console.log("[SALTR] sendLevelEndFailHandler() - failed.");
     }
 
     /**
      * Send "level end" event
-     * @param variationId The variation identifier.
+     * @param constiationId The constiation identifier.
      * @param endStatus The end status.
      * @param endReason The end reason.
      * @param score The score.
      * @param customTextProperties The custom text properties.
      * @param customNumbericProperties The numberic properties.
      */
-    public sendLevelEndEvent(variationId:string, endStatus:string, endReason:string, score:number,
-                             customTextProperties:any[], customNumbericProperties:any[]):void {
+    sendLevelEndEvent(constiationId: string, endStatus: string, endReason: string, score: number, customTextProperties: any[], customNumbericProperties: any[]): void {
         const params: any = {
             clientKey: this._clientKey,
             devMode: this._devMode,
-            variationId: variationId,
+            constiationId: constiationId,
+            deviceId: this._deviceId,
             socialId: this._socialId,
             endReason: endReason,
             endStatus: endStatus,
@@ -252,168 +255,10 @@ class SLTSaltr {
         };
 
         const sendLevelEndEventApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_SEND_LEVEL_END);
-//        sendLevelEndEventApiCall.call(params, sendLevelEndApiCallback);
+        sendLevelEndEventApiCall.call(params, this.sendLevelEndSuccessHandler, this.sendLevelEndFailHandler);
     }
 
-    /**
-     * Loads the level content.
-     * @param sltLevel The level.
-     */
-    private loadLevelContentFromSaltr(sltLevel:SLTLevel):void {
-        var params:any = {
-            levelContentUrl: sltLevel.contentUrl + "?this._timethis._=" + new Date().getTime()
-        };
-        var levelContentApiCall:SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_LEVEL_CONTENT);
-//        levelContentApiCall.call(params, levelContentApiCallback, this._requestIdleTimeout);
-        const thisInstance = this;
-        function levelContentApiCallback(result:SLTApiCallResult):void {
-            const content: any = result.data;
-            if (result.success && content != null) {
-                thisInstance.levelContentLoadSuccessHandler(sltLevel, content);
-            }
-            else {
-                thisInstance.levelContentLoadFailHandler();
-            }
-        }
-    }
-
-    private levelContentLoadSuccessHandler(sltLevel:SLTLevel, content:any):void {
-        sltLevel.updateContent(content);
-        this._levelContentLoadSuccessCallback();
-    }
-
-    private levelContentLoadFailHandler():void {
-        this._levelContentLoadFailCallback(new SLTStatusLevelContentLoadFail());
-    }
-
-    private addPropertiesApiCallback(result:SLTApiCallResult):void {
-        if (result.success) {
-            console.log("[addPropertiesApiCallback] success");
-        } else {
-            console.log("[addPropertiesApiCallback] error");
-        }
-    }
-
-    private appDataApiCallback(result:SLTApiCallResult):void {
-        if (result.success) {
-            this.appDataLoadSuccessCallback(result);
-        } else {
-            this.appDataLoadFailCallback(result.status);
-        }
-    }
-
-    //TODO @GSAR: later we need to report the feature set differences by an event or a callback to client;
-    private appDataLoadSuccessCallback(result:SLTApiCallResult):void {
-        this._isLoading = false;
-
-        if (this._devMode && !this._isSynced) {
-            this.sync();
-        }
-
-        const levelType: String = result.data.levelType;
-
-        try {
-            this._appData.initWithData(result.data);
-        } catch (e) {
-            this._connectFailCallback(new SLTStatusAppDataParseError());
-            return;
-        }
-
-        if (!this._useNoLevels && levelType != SLTLevel.LEVEL_TYPE_NONE) {
-            try {
-                this._levelData.initWithData(result.data);
-            } catch (e) {
-                this._connectFailCallback(new SLTStatusLevelsParseError());
-                return;
-            }
-
-        }
-
-        this._connected = true;
-        this._connectSuccessCallback();
-
-        if (!this._heartBeatTimerStarted) {
-            this.startHeartbeat();
-        }
-    }
-
-    private appDataLoadFailCallback(status:SLTStatus):void {
-        this._isLoading = false;
-        if (status.statusCode == 'API_ERROR') {
-            this._connectFailCallback(new SLTStatusAppDataLoadFail());
-        } else {
-            this._connectFailCallback(status);
-        }
-    }
-
-    private addUserSuccessHandler():void {
-        console.log("[Saltr] Dev adding new user has succeed.");
-        this.sync();
-    }
-
-    private addUserFailHandler(result:SLTApiCallResult):void {
-        console.log("[Saltr] Dev adding new user has failed.");
-    }
-
-    private addUserToSALTR(email:string):void {
-        const params: any = {
-            email: email,
-            clientKey: this._clientKey,
-            socialId: this._socialId,
-            platform: this._platform,
-            devMode: this._devMode
-        };
-    }
-
-    private registerUserApiCallback(result:SLTApiCallResult):void {
-        if (result.success) {
-            this.addUserSuccessHandler();
-        } else {
-            this.addUserFailHandler(result);
-        }
-    }
-
-    private sendLevelEndApiCallback(result:SLTApiCallResult):void {
-        if (result.success) {
-            console.log("sendLevelEndSuccessHandler");
-        } else {
-            console.log("sendLevelEndFailHandler");
-        }
-    }
-
-    private sync():void {
-//        var params:Object = {
-//            clientKey: this._clientKey,
-//            devMode: this._devMode,
-//            socialId: this._socialId,
-//            developerFeatures: this._appData.developerFeatures
-//        };
-//        var syncApiCall:SLTApiCall = this._apiFactory.getCall(SLTApiCallFactory.APIthis._CALLthis._SYNC, false);
-//        syncApiCall.call(params, syncApiCallback);
-    }
-
-    private syncApiCallback(result:SLTApiCallResult):void {
-        if (result.success) {
-            this.syncSuccessHandler();
-        } else {
-            this.syncFailHandler(result);
-        }
-    }
-
-    private syncSuccessHandler():void {
-        this._isSynced = true;
-    }
-
-    private syncFailHandler(result:SLTApiCallResult):void {
-        if (result.status.statusCode == 'REGISTRATION_REQUIRED') {
-            this.registerUser();
-        }
-        else {
-            console.log("[Saltr] Dev feature Sync has failed. " + result.status.statusMessage);
-        }
-    }
-
-    private startHeartbeat():void {
+    private startHeartbeat(): void {
         this.stopHeartbeat();
         this._heartbeatTimer = new Timer(SLTConfig.HEARTBEAT_TIMER_DELAY);
         this._heartbeatTimer.addEventListener(TimerEvent.TIMER, this.heartbeatTimerHandler);
@@ -421,7 +266,7 @@ class SLTSaltr {
         this._heartBeatTimerStarted = true;
     }
 
-    private stopHeartbeat():void {
+    private stopHeartbeat(): void {
         if (null != this._heartbeatTimer) {
             this._heartbeatTimer.stop();
             this._heartbeatTimer.removeEventListener(TimerEvent.TIMER, this.heartbeatTimerHandler);
@@ -430,20 +275,78 @@ class SLTSaltr {
         this._heartBeatTimerStarted = false;
     }
 
-    private heartbeatTimerHandler(event:TimerEvent):void {
+    private heartbeatTimerHandler(event: TimerEvent): void {
         const params: any = {
             clientKey: this._clientKey,
             devMode: this._devMode,
+            deviceId: this._deviceId,
             socialId: this._socialId
         };
         const heartbeatApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_HEARTBEAT);
-//        heartbeatApiCall.call(params, heartbeatApiCallback);
+
+        heartbeatApiCall.call(params, null, this.heartbeatFailHandler);
     }
 
-    private heartbeatApiCallback(result:SLTApiCallResult):void {
-        if (!result.success) {
-            this.stopHeartbeat();
+    private heartbeatFailHandler(status: SLTStatus): void {
+        this.stopHeartbeat();
+    }
+
+    private getAppData(successHandler: (...args: any[]) => void, failHandler: (...args: any[]) => void, ping: boolean = false, basicProperties: any = null, customProperties: any = null, additionalParams: any = null): void {
+        this._isWaitingForAppData = true;
+
+        const params: any = {
+            context: SLTContext.NORMAL,
+            clientKey: this._clientKey,
+            deviceId: this._deviceId,
+            devMode: this._devMode,
+            ping: ping,
+            socialId: this._socialId,
+            basicProperties: basicProperties,
+            customProperties: customProperties,
+            snapshotId: this._appData.snapshotId
+        };
+
+        if (additionalParams != null) {
+            for (const i in additionalParams) {
+                params[i] = additionalParams[i];
+            }
         }
+
+        const appDataCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_APP_DATA, this._appData);
+        appDataCall.call(params, successHandler, failHandler, this._dropTimeout);
+        SLTLogger.getInstance().log("New app data requested.");
+    }
+
+    /**
+     * Sends Ping GetAppData call to Saltr.
+     */
+    ping(successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null): void {
+        if (this.canGetAppData()) {
+            this._connectSuccessCallback = successCallback;
+            this._connectFailCallback = failCallback;
+            this.getAppData(this.appDataConnectSuccessHandler, this.appDataConnectFailHandler, true, this._basicProperties, this._customProperties);
+        }
+    }
+
+    private appDataConnectSuccessHandler(data: SLTAppData): void {
+        this._appData = data;
+        this._isWaitingForAppData = false;
+        this._connectSuccessCallback();
+
+        if (!this._heartBeatTimerStarted) {
+            this.startHeartbeat();
+        }
+    }
+
+    private appDataConnectFailHandler(status: SLTStatus): void {
+        SLTLogger.getInstance().log("New app data request from connect() failed. StatusCode: " + status.statusCode);
+        this._isWaitingForAppData = false;
+
+        if ('API_ERROR' == status.statusCode) {
+    this._connectFailCallback(new SLTStatusAppDataLoadFail());
+} else {
+    this._connectFailCallback(status);
+}
     }
 }
 

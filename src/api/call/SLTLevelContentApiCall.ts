@@ -5,6 +5,11 @@ import {SLTResource} from "../../resource/SLTResource";
 import {SLTApiCallResult} from "./SLTApiCallResult";
 
 class SLTLevelContentApiCall extends SLTApiCall {
+    private _alternateUrl:string;
+
+    constructor() {
+        super();
+    }
 
     validateDefaultWebParams(): any {
         const contentURL: string = this._params.contentUrl;
@@ -15,7 +20,8 @@ class SLTLevelContentApiCall extends SLTApiCall {
     }
 
     buildCall():any {
-        this._url = this._params.contentUrl + "?_time_=" + new Date().getTime();
+        this._url = this._params.contentUrl;
+        this._alternateUrl = this._params.alternateUrl;
         return { method: 'GET'};
     }
 
@@ -29,6 +35,25 @@ class SLTLevelContentApiCall extends SLTApiCall {
         apiCallResult.success = content != null && content != undefined;
         apiCallResult.data = content;
         this.handleResult(apiCallResult);
+    }
+
+    callRequestFailHandler(resource:SLTResource):void {
+        if (this._alternateUrl) {
+            const ticket: SLTResourceURLTicket = new SLTResourceURLTicket(this._alternateUrl);
+
+            new SLTResource(ticket, this.alternateCallRequestCompletedHandler, this.alternateCallRequestFailHandler).load();
+        }
+        else {
+            this.alternateCallRequestFailHandler(resource);
+        }
+    }
+
+    private alternateCallRequestCompletedHandler(resource:SLTResource):void {
+        this.callRequestCompletedHandler(resource);
+    }
+
+    private alternateCallRequestFailHandler(resource:SLTResource):void {
+        super.callRequestFailHandler(resource);
     }
 
 }

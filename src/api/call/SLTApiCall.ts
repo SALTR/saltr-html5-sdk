@@ -30,7 +30,7 @@ class SLTApiCall {
     }
 
     public call(params: any, successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null,
-                nativeTimeout: number = 0, timeout: number = 0): void {
+                timeout: number = 0): void {
         this._params = params;
         this._successCallback = successCallback;
         this._failCallback = failCallback;

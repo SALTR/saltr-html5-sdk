@@ -12,12 +12,13 @@ export class SLT2DBoard extends SLTBoard {
 
     /**
      * Class constructor.
+     * @param token
      * @param config The board configuration.
      * @param propertyObjects The board associated properties.
      * @param checkpoints The board checkpoints.
      */
-    constructor(config:SLT2DBoardConfig, propertyObjects:Dictionary<any>, checkpoints:Dictionary<any>) {
-        super(config.layers, propertyObjects, checkpoints);
+    constructor(token:string, config:SLT2DBoardConfig, propertyObjects:Dictionary<any>, checkpoints:Dictionary<any>) {
+        super(token, config.layers, propertyObjects, checkpoints);
         this._config = config;
     }
 

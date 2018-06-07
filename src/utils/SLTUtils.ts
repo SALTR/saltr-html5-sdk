@@ -76,12 +76,6 @@ class SLTUtils {
             return [...object];
         }
     }
-
-    public static validateFeatureToken(token: string): boolean {
-        let pattern: RegExp = /[^a-zA-Z0-9._-]/;
-        return !(null == token || "" == token || -1 != token.search(pattern));
-
-    }
 }
 
 export {SLTUtils}

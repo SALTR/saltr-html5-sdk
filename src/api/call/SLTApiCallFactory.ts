@@ -4,9 +4,8 @@ import {SLTAddPropertiesApiCall} from "./SLTAddPropertiesApiCall";
 import {SLTWebAppDataApiCall} from "./SLTWebAppDataApiCall";
 import {SLTHeartbeatApiCall} from "./SLTHeartbeatApiCall";
 import {SLTLevelContentApiCall} from "./SLTLevelContentApiCall";
-import {SLTSendLevelEndEventApiCall} from "./SLTSendLevelEndEventApiCall";
+import {SLTSendLevelEndEventApiCall} from "./SLTLevelEndEventApiCall";
 import {SLTLevelReportApiCall} from "./SLTLevelReportApiCall";
-
 
 class SLTApiCallFactory {
     public static readonly API_CALL_ADD_PROPERTIES: string = "AddProperties";

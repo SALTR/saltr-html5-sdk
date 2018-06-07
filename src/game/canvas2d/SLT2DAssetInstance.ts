@@ -14,8 +14,6 @@ export class SLT2DAssetInstance extends SLTAssetInstance {
     private readonly _scaleX:number;
     private readonly _scaleY:number;
     private readonly _rotation:number;
-    private readonly _positions:Dictionary<Point>;
-
 
     constructor(token: string, state: SLTAssetState, properties: any, x: number, y: number, scaleX: number, scaleY: number, rotation: number, positions: Dictionary<any>) {
         super(token, state, properties);
@@ -24,7 +22,6 @@ export class SLT2DAssetInstance extends SLTAssetInstance {
         this._scaleX = scaleX;
         this._scaleY = scaleY;
         this._rotation = rotation;
-        this._positions = positions;
     }
 
     get x(): number {
@@ -37,17 +34,6 @@ export class SLT2DAssetInstance extends SLTAssetInstance {
 
     get rotation(): number {
         return this._rotation;
-    }
-
-    get positions(): Dictionary<Point> {
-        return this._positions;
-    }
-
-    /**
-     * The current instance position by id.
-     */
-    public getPositionById(id:string):Point {
-        return this._positions[id];
     }
 
     private getScaleAppliedState(state:SLTAssetState):SLTAssetState {

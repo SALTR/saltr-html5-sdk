@@ -84,7 +84,7 @@ class SLTStatus {
     public constructor(code: string, message: string) {
         this._statusCode = code;
         this._statusMessage = message;
-        console.log(message);
+        console.log("[SALTR] " + message);
     }
 
     /**

@@ -47,7 +47,7 @@ export class SLT2DBoardParser extends SLTBoardParser {
         }
 
         const config: SLT2DBoardConfig = new SLT2DBoardConfig(layers, boardNode, assetMap);
-        return new SLT2DBoard(config, boardPropertyanys, SLTCheckPointParser.parseCheckpoints(boardNode));
+        return new SLT2DBoard(boardNode.token, config, boardPropertyanys, SLTCheckPointParser.parseCheckpoints(boardNode));
     }
 
     private parseLayer(layerNode:any, layerToken:string, assetMap:Dictionary<any>):SLT2DBoardLayer {

@@ -73,13 +73,13 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
         let matchingRuleIncludedBoards: any[] = this.parseMatchingRuleIncludedBoards(rootNode);
 
         let boards: Dictionary<any> = {};
-        for (let boardId in boardNodes) {
+        for (const boardNode in boardNodes) {
             let boardRelatedMatchingRules: SLTMatchingRules = new SLTMatchingRules();
-            if (matchingRules.matchingRuleEnabled && -1 != matchingRuleIncludedBoards.indexOf(boardId)) {
+            const boardToken: string = boardNodes[boardNode].token;
+            if (matchingRules.matchingRuleEnabled && -1 != matchingRuleIncludedBoards.indexOf(boardToken)) {
                 boardRelatedMatchingRules = matchingRules;
             }
-            let boardNode: any = boardNodes[boardId];
-            boards[boardId] = this.parseLevelBoard(boardRelatedMatchingRules, boardNode, assetMap);
+            boards[boardToken] = this.parseLevelBoard(boardRelatedMatchingRules, boardNode, assetMap);
         }
         return boards;
     }
@@ -123,7 +123,7 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
         }
         let config: SLTMatchingBoardConfig = new SLTMatchingBoardConfig(cells, layers, boardNode, assetMap, matchingRuleProperties);
 
-        return new SLTMatchingBoard(config, boardPropertyObjects, SLTCheckPointParser.parseCheckpoints(boardNode));
+        return new SLTMatchingBoard(boardNode.token, config, boardPropertyObjects, SLTCheckPointParser.parseCheckpoints(boardNode));
     }
 
     private parseLayerChunks(layer: SLTMatchingBoardLayer, chunkNodes: any[], cells: SLTCells, assetMap: Dictionary<any>): void {

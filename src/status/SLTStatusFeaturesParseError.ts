@@ -7,6 +7,6 @@ export class SLTStatusFeaturesParseError extends SLTStatus {
 
 
    constructor() {
-        super(SLTStatus.CLIENT_FEATURES_PARSE_ERROR, "[SALTR] Failed to decode Features.");
+        super('CLIENT_FEATURES_PARSE_ERROR', "[SALTR] Failed to decode Features.");
     }
 }

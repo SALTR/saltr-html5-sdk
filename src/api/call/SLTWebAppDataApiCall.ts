@@ -14,7 +14,7 @@ class SLTWebAppDataApiCall extends SLTAppDataApiCall {
 
     public call(params: any, successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null,
                 nativeTimeout: number = 0, timeout: number = 0): void {
-        super.call(params, this.wrappedSuccessCallback, this.wrappedFailCallback, nativeTimeout, timeout);
+        super.call(params, this.wrappedSuccessCallback, this.wrappedFailCallback, timeout);
 
         this._originalFailCallback = failCallback;
         this._originalSuccessCallback = successCallback;
@@ -35,7 +35,7 @@ class SLTWebAppDataApiCall extends SLTAppDataApiCall {
     private wrappedFailCallback(status: SLTStatus): void {
         SLTLogger.getInstance().log("New app data request from connect() failed. StatusCode: " + status.statusCode);
 
-        if (status.statusCode == SLTStatus.API_ERROR) {
+        if (status.statusCode == 'API_ERROR') {
             this._originalFailCallback(new SLTStatusAppDataLoadFail());
         }
         else {
