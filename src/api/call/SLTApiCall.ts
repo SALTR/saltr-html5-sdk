@@ -12,7 +12,7 @@ class SLTApiCall {
     protected _failCallback: (...args: any[]) => void;
 
     public static removeEmptyAndNullsJSONReplacer(k: any, v: any): any {
-        if (v != null && v != "null" && v !== "") {
+        if (v != null && v != "null" && v !== "" && typeof v !== "undefined") {
             return v;
         }
         return undefined;

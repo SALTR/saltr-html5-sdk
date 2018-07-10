@@ -9,12 +9,21 @@ import {SLTLevelContentApiCall} from "../src/api/call/SLTLevelContentApiCall";
 import {SLTLevelReportApiCall} from "../src/api/call/SLTLevelReportApiCall";
 import * as request from "request";
 import {SLTStatus} from "../src/status/SLTStatus";
+import {SLTSaltr} from "../src";
+import {SLTExperiment} from "../src/SLTExperiment";
+import {SLTBasicProperties} from "../src/SLTBasicProperties";
+import {SLTLevelCollectionBody} from "../src/SLTLevelCollectionBody";
 
+const clientKey: string = "815230";
+const socialId: string = "100000024783448";
+const sltSaltr: SLTSaltr = new SLTSaltr(clientKey, socialId);
 describe("Test Saltr SDK", () => {
     it('getAppData', () => {
+        sltSaltr.connect((data) => {
+        }, () => {}, null);
         const appData: SLTAppData = new SLTAppData();
         const apiCall: SLTApiCall = new SLTAppDataApiCall(appData);
-        apiCall.call({clientKey: "815230", socialId: "100000024783448"}, (data: any) => {
+        apiCall.call({clientKey, socialId}, (data: any) => {
             console.log(data);
             expect(data).an("object");
             expect(data.experiments).an("array");
@@ -46,8 +55,9 @@ describe("Test Saltr SDK", () => {
     });
 
     it('addPropertiesApiCall', () => {
+        sltSaltr.addProperties({}, {});
         const apiCall: SLTApiCall = new SLTAddPropertiesApiCall();
-        apiCall.call({clientKey: "815230", socialId: "100000024783448"}, data => {
+        apiCall.call({clientKey, socialId}, data => {
             console.log(data);
             expect(data.success).equal(true);
             expect(data.message).equal('Player properties are stored successfully');
@@ -56,7 +66,7 @@ describe("Test Saltr SDK", () => {
 
     it('heartbeatApiCall', () => {
         const apiCall: SLTApiCall = new SLTHeartbeatApiCall();
-        apiCall.call({clientKey: "815230", socialId: "100000024783448"}, data => {
+        apiCall.call({clientKey, socialId}, data => {
             console.log(data);
             expect(data.success).equal(true);
             expect(data.message).equal('Ok');
@@ -65,7 +75,7 @@ describe("Test Saltr SDK", () => {
 
     it('heartbeatApiCall wrong client key', () => {
         const apiCall: SLTApiCall = new SLTHeartbeatApiCall();
-        apiCall.call({clientKey: "random wrong key", socialId: "100000024783448"}, null,
+        apiCall.call({clientKey: "random wrong key", socialId}, null,
             (data: SLTStatus) => {
                 expect(data.statusCode).equal('VALIDATION_ERROR');
                 expect(data.statusMessage).equal('Cannot find an application with the client key.');
@@ -74,7 +84,7 @@ describe("Test Saltr SDK", () => {
 
     it('heartbeatApiCall no client key', () => {
         const apiCall: SLTApiCall = new SLTHeartbeatApiCall();
-        apiCall.call({socialId: "100000024783448"}, null,
+        apiCall.call({socialId}, null,
             (data: SLTStatus) => {
                 expect(data.statusCode).equal('API_ERROR');
                 expect(data.statusMessage).equal('Field clientKey is required');
@@ -83,7 +93,7 @@ describe("Test Saltr SDK", () => {
 
     it('heartbeatApiCall no socialId', () => {
         const apiCall: SLTApiCall = new SLTHeartbeatApiCall();
-        apiCall.call({clientKey: "815230"}, null,
+        apiCall.call({clientKey}, null,
             (data: SLTStatus) => {
                 expect(data.statusCode).equal('API_ERROR');
                 expect(data.statusMessage).equal('Field socialId is required');

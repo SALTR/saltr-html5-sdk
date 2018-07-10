@@ -29,10 +29,12 @@ class SLTLevelParser {
 
     parseLevelProperties(rootNode: any): Dictionary<any> {
         if (rootNode.hasOwnProperty(SLTLevelParser.NODE_PROPERTY_OBJECTS)) {
-            var properties: Dictionary<any> = {};
-            var levelPropertyNodes: any = rootNode[SLTLevelParser.NODE_PROPERTY_OBJECTS];
-            for (var token in levelPropertyNodes) {
-                properties[token] = levelPropertyNodes[token];
+            const properties: Dictionary<any> = {};
+            const levelPropertyNodes: any = rootNode[SLTLevelParser.NODE_PROPERTY_OBJECTS];
+            for (const token in levelPropertyNodes) {
+                if (levelPropertyNodes.hasOwnProperty(token)) {
+                    properties[token] = levelPropertyNodes[token];
+                }
             }
             return properties;
         }

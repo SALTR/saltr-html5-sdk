@@ -9,10 +9,10 @@ class SLTLevelReportApiCall extends SLTApiCall {
 
     public buildCall(): any {
         this._url = SLTConfig.SALTR_DEVAPI_URL;
-        let args: any = this.buildDefaultArgs();
-        args.action = SLTConfig.ACTION_LEVEL_REPORT;
-        args.levelReportEventProperties = this._params.levelReportEventProperties;
-        return args;
+        let params: any = this.buildDefaultArgs();
+        params.action = SLTConfig.ACTION_LEVEL_REPORT;
+        params.args = JSON.stringify({levelReportEventProperties: this._params.levelReportEventProperties}, SLTApiCall.removeEmptyAndNullsJSONReplacer);
+        return params;
     }
 }
 

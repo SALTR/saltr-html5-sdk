@@ -85,7 +85,7 @@ class SLTDeserializer {
         if (featureNodes != null) {
 
             const featureNodeMap: Dictionary<any> = {};
-            for (let i: number = 0, len: number = featureNodes.length; i < len; ++i) {
+            for (let i: number = 0; i < featureNodes.length; ++i) {
                 const node: any = featureNodes[i];
                 featureNodeMap[node.token] = node;
             }
@@ -119,8 +119,6 @@ class SLTDeserializer {
                 } else if (sltFeature.isRequired == false) {
                     sltFeature.disabled = true;
                 }
-
-
             }
         }
         return sltFeatureMap;

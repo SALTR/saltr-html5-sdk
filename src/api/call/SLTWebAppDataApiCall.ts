@@ -46,13 +46,11 @@ class SLTWebAppDataApiCall extends SLTAppDataApiCall {
     private processNewAppData(data: any): boolean {
         try {
             this._appData.initWithData(data);
-
         }
         catch (e) {
             SLTLogger.getInstance().log("New app data process failed.");
             return false;
         }
-
         SLTLogger.getInstance().log("New app data processed.");
         return true;
     }

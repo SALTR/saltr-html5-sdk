@@ -16,7 +16,6 @@ import {SLTContext} from "./SLTContext";
 
 class SLTSaltr {
     private _socialId: string;
-    private _deviceId: string;
     private readonly _clientKey: string;
     private _isWaitingForAppData: boolean;
 
@@ -33,6 +32,8 @@ class SLTSaltr {
 
     private _heartbeatTimer: Timer;
     private _heartBeatTimerStarted: boolean;
+    private _sltLevel: SLTLevel;
+    private _callback: (...args: any[]) => void;
 
     private _connectSuccessCallback: (...args: any[]) => void;
     private _connectFailCallback: (...args: any[]) => void;
@@ -40,12 +41,10 @@ class SLTSaltr {
     /**
      * Class constructor.
      * @param clientKey The client key.
-     * @param deviceId
      * @param socialId The social identifier.
      */
-    constructor(clientKey: string, deviceId: string = null, socialId: string = null) {
+    constructor(clientKey: string, socialId: string = null) {
         this._clientKey = clientKey;
-        this._deviceId = deviceId;
         this._socialId = socialId;
 
         this._heartBeatTimerStarted = false;
@@ -55,6 +54,10 @@ class SLTSaltr {
         this._timeoutIncrease = 0;
         this._logger = SLTLogger.getInstance();
         this._appData = new SLTAppData();
+
+        this.appDataConnectSuccessHandler = this.appDataConnectSuccessHandler.bind(this);
+        this.appDataConnectFailHandler = this.appDataConnectFailHandler.bind(this);
+        this.heartbeatTimerHandler = this.heartbeatTimerHandler.bind(this);
     }
 
 
@@ -131,40 +134,37 @@ class SLTSaltr {
         return !this._isWaitingForAppData;
     }
 
-    start(): void {
-        //abstract...
-    }
-
-    private getAppDataFromSnapshot(): any {
-        //abstract...
-        return null;
-    }
-
-    initLevelContent(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void, fromSaltr: boolean = false): void {
+    initLevelContent(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
         sltLevel.contentReady = false;
-
-        if (fromSaltr) {
-            this.initLevelContentFromSaltr(levelCollectionToken, sltLevel, callback);
-        } else {
-            this.initLevelContentFromAvailableSource(levelCollectionToken, sltLevel, callback);
-        }
+        this.initLevelContentFromSaltr(levelCollectionToken, sltLevel, callback);
     }
 
     clearLevelContent(sltLevel: SLTLevel): void {
         sltLevel.clearContent();
     }
 
-    private initLevelContentFromAvailableSource(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
-        //override
+    private initLevelContentFromSaltr(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
+        const params: any = {
+            contentUrl: sltLevel.contentUrl,
+            alternateUrl: sltLevel.defaultContentUrl
+        };
+
+        const levelContentApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_LEVEL_CONTENT);
+        levelContentApiCall.call(params, this.levelContentLoadSuccessCallback.bind(this), this.levelContentLoadFailCallback.bind(this), this._dropTimeout);
     }
 
-    private initLevelContentFromSaltr(levelCollectionToken: string, sltLevel: SLTLevel, callback: (...args: any[]) => void): void {
+    levelContentLoadSuccessCallback(data: any): void {
+        this._sltLevel.updateContent(data);
+        this._callback(true);
+    }
+
+    levelContentLoadFailCallback(status: SLTStatus): void {
+        this._callback(false);
     }
 
     sendLevelReport(successCallback: (...args: any[]) => void, failCallback: (...args: any[]) => void, properties: any): void {
         const params: any = {
             clientKey: this._clientKey,
-            deviceId: this._deviceId,
             socialId: this._socialId,
             levelReportEventProperties: properties
         };
@@ -181,7 +181,6 @@ class SLTSaltr {
         if (this.canGetAppData()) {
             this._connectSuccessCallback = successCallback;
             this._connectFailCallback = failCallback;
-            this.updateMissingProperties(basicProperties);
             this._customProperties = customProperties;
             this._basicProperties = basicProperties;
             this.getAppData(this.appDataConnectSuccessHandler, this.appDataConnectFailHandler, false, this._basicProperties, this._customProperties);
@@ -189,10 +188,6 @@ class SLTSaltr {
             SLTLogger.getInstance().log("Connect failed. Concurrent load accrues.");
             failCallback(new SLTStatusAppDataConcurrentLoadRefused());
         }
-    }
-
-    private updateMissingProperties(basicProperties: SLTBasicProperties): void {
-        //abstract....
     }
 
     /**
@@ -206,13 +201,12 @@ class SLTSaltr {
         }
         const params: any = {
             clientKey: this._clientKey,
-            deviceId: this._deviceId,
             socialId: this._socialId,
             basicProperties: basicProperties,
             customProperties: customProperties
         };
         const addPropertiesApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_ADD_PROPERTIES);
-        addPropertiesApiCall.call(params, this.addPropertiesSuccessHandler, this.addPropertiesFailHandler,  this._dropTimeout);
+        addPropertiesApiCall.call(params, this.addPropertiesSuccessHandler, this.addPropertiesFailHandler, this._dropTimeout);
     }
 
     private addPropertiesSuccessHandler(data: any): void {
@@ -245,7 +239,6 @@ class SLTSaltr {
             clientKey: this._clientKey,
             devMode: this._devMode,
             constiationId: constiationId,
-            deviceId: this._deviceId,
             socialId: this._socialId,
             endReason: endReason,
             endStatus: endStatus,
@@ -279,7 +272,6 @@ class SLTSaltr {
         const params: any = {
             clientKey: this._clientKey,
             devMode: this._devMode,
-            deviceId: this._deviceId,
             socialId: this._socialId
         };
         const heartbeatApiCall: SLTApiCall = SLTApiCallFactory.getCall(SLTApiCallFactory.API_CALL_HEARTBEAT);
@@ -297,13 +289,11 @@ class SLTSaltr {
         const params: any = {
             context: SLTContext.NORMAL,
             clientKey: this._clientKey,
-            deviceId: this._deviceId,
             devMode: this._devMode,
             ping: ping,
             socialId: this._socialId,
             basicProperties: basicProperties,
             customProperties: customProperties,
-            snapshotId: this._appData.snapshotId
         };
 
         if (additionalParams != null) {
@@ -343,10 +333,10 @@ class SLTSaltr {
         this._isWaitingForAppData = false;
 
         if ('API_ERROR' == status.statusCode) {
-    this._connectFailCallback(new SLTStatusAppDataLoadFail());
-} else {
-    this._connectFailCallback(status);
-}
+            this._connectFailCallback(new SLTStatusAppDataLoadFail());
+        } else {
+            this._connectFailCallback(status);
+        }
     }
 }
 

@@ -13,13 +13,13 @@ class SLTAppDataApiCall extends SLTApiCall {
 
     public buildCall(): any {
         this._url = SLTConfig.SALTR_API_URL;
-        let args: any = this.buildDefaultArgs();
-        args.ping = this._params.ping;
-        args.snapshotId = this._params.snapshotId;
-        args.basicProperties = this._params.basicProperties;
-        args.customProperties = this._params.customProperties;
-        args.action = SLTConfig.ACTION_GET_APP_DATA;
-        return args;
+        let params: any = this.buildDefaultArgs();
+        params.ping = this._params.ping;
+        params.snapshotId = this._params.snapshotId;
+        params.action = SLTConfig.ACTION_GET_APP_DATA;
+        params.args = JSON.stringify({basicProperties: this._params.basicProperties, customProperties: this._params.customProperties},
+            SLTApiCall.removeEmptyAndNullsJSONReplacer);
+        return params;
     }
 }
 
