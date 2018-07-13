@@ -19,11 +19,7 @@ class SLTLevel {
     private _properties: Dictionary<any>;
     private _version: string;
     private _defaultVersion:string;
-
     private _contentReady: boolean;
-    private _matrixAssetMap: Dictionary<any>;
-    private _canvas2DAssetMap: Dictionary<any>;
-
     private _parser: SLTLevelParser;
 
     /**

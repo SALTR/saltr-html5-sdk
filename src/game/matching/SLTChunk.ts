@@ -218,10 +218,10 @@ export class SLTChunk {
     }
 
     private getCellWithPosition(col: number, row: number): SLTCell {
-        for (const key in this._chunkCells) {
-            const value = this._chunkCells[key];
-            if (col == value.col && row == value.row) {
-               return value;
+        for (let i: number = 0, length: number = this._chunkCells.length; i < length; ++i) {
+            const cell: SLTCell = this._chunkCells[i];
+            if (col == cell.col && row == cell.row) {
+               return cell;
             }
         }
         return null;

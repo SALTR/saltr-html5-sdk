@@ -9,11 +9,15 @@ class SLTAddPropertiesApiCall extends SLTApiCall {
 
     public buildCall(): any {
         this._url = SLTConfig.SALTR_API_URL;
-        let params: any = this.buildDefaultArgs();
-        params.action = SLTConfig.ACTION_ADD_PROPERTIES;
-        params.args = JSON.stringify({basicProperties: this._params.basicProperties, customProperties: this._params.customProperties},
-            SLTApiCall.removeEmptyAndNullsJSONReplacer);
-        return params;
+        const urlVars: any = {};
+        urlVars.action = SLTConfig.ACTION_ADD_PROPERTIES;
+
+        const args: any = this.buildDefaultArgs();
+        args.basicProperties = this._params.basicProperties;
+        args.customProperties = this._params.customProperties;
+
+        urlVars.args = JSON.stringify(args, SLTApiCall.removeEmptyAndNullsJSONReplacer);
+        return urlVars;
     }
 }
 

@@ -27,10 +27,11 @@ class SLTApiCall {
     }
 
     public constructor() {
+        this.callRequestCompletedHandler = this.callRequestCompletedHandler.bind(this);
+        this.callRequestFailHandler = this.callRequestFailHandler.bind(this);
     }
 
-    public call(params: any, successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null,
-                timeout: number = 0): void {
+    public call(params: any, successCallback: (...args: any[]) => void = null, failCallback: (...args: any[]) => void = null, timeout: number = 0): void {
         this._params = params;
         this._successCallback = successCallback;
         this._failCallback = failCallback;
@@ -52,8 +53,7 @@ class SLTApiCall {
 
     private doCall(urlVars: any, timeout: number): void {
         let ticket: SLTResourceURLTicket = this.getURLTicket(urlVars, timeout);
-        let resource: SLTResource = new SLTResource(ticket, this.callRequestCompletedHandler.bind(this),
-            this.callRequestFailHandler.bind(this));
+        let resource: SLTResource = new SLTResource(ticket, this.callRequestCompletedHandler, this.callRequestFailHandler);
         resource.load();
     }
 
@@ -106,8 +106,7 @@ class SLTApiCall {
     }
 
     public buildDefaultArgs(): any {
-        let args: any = {};
-
+        const args: any = {};
         args.socialId = this._params.socialId;
         args.apiVersion = "1.9.0";
         args.clientKey = this._params.clientKey;

@@ -44,7 +44,9 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
                 let propertyObjects: any = cellObject[SLTLevelParser.NODE_PROPERTY_OBJECTS];
                 let cellProperties: Dictionary<any> = {};
                 for (let propertyKey in propertyObjects) {
-                    cellProperties[propertyKey] = propertyObjects[propertyKey];
+                    if (propertyObjects.hasOwnProperty(propertyKey)) {
+                        cellProperties[propertyKey] = propertyObjects[propertyKey];
+                    }
                 }
                 cell.properties = cellProperties;
             }
@@ -67,7 +69,7 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
      * @return The parsed boards.
      */
     parseBoardContent(rootNode: any, assetMap: Dictionary<any>): Dictionary<any> {
-        let boardNodes: any = this.getBoardsNode(rootNode, SLTBoard.BOARD_TYPE_MATCHING);
+        let boardNodes: any = SLTBoardParser.getBoardsNode(rootNode, SLTBoard.BOARD_TYPE_MATCHING);
 
         let matchingRules: SLTMatchingRules = this.parseMatchingRules(rootNode, assetMap);
         let matchingRuleIncludedBoards: any[] = this.parseMatchingRuleIncludedBoards(rootNode);
@@ -110,7 +112,7 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
     }
 
     private parseLevelBoard(matchingRuleProperties: SLTMatchingRules, boardNode: any, assetMap: Dictionary<any>): SLTMatchingBoard {
-        let boardPropertyObjects: Dictionary<any> = this.parseBoardProperties(boardNode);
+        let boardPropertyObjects: Dictionary<any> = SLTBoardParser.parseBoardProperties(boardNode);
 
         let cells: SLTCells = new SLTCells(boardNode.cols, boardNode.rows);
         SLTMatchingBoardParser.initializeCells(cells, boardNode);
@@ -118,8 +120,10 @@ export class SLTMatchingBoardParser extends SLTBoardParser {
         let layers: Dictionary<any> = {};
         let layerNodes: any = boardNode.layers;
         for (let layerToken in layerNodes) {
-            let layerNode: any = layerNodes[layerToken];
-            layers[layerToken] = this.parseLayer(layerNode, layerToken, cells, assetMap);
+            if (layerNodes.hasOwnProperty(layerToken)) {
+                let layerNode: any = layerNodes[layerToken];
+                layers[layerToken] = this.parseLayer(layerNode, layerToken, cells, assetMap);
+            }
         }
         let config: SLTMatchingBoardConfig = new SLTMatchingBoardConfig(cells, layers, boardNode, assetMap, matchingRuleProperties);
 

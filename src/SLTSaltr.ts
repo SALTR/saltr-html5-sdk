@@ -298,7 +298,9 @@ class SLTSaltr {
 
         if (additionalParams != null) {
             for (const i in additionalParams) {
-                params[i] = additionalParams[i];
+                if (additionalParams.hasOwnProperty(i)) {
+                    params[i] = additionalParams[i];
+                }
             }
         }
 

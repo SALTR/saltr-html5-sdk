@@ -16,13 +16,14 @@ export class SLTSendLevelEndEventApiCall extends SLTApiCall {
         args.variationId = this._params.variationId;
 
         const eventProps: any = {};
-        args.eventProps = eventProps;
         eventProps.endReason = this._params.endReason;
         eventProps.endStatus = this._params.endStatus;
         eventProps.score = this._params.score;
         this.addLevelEndEventProperties(eventProps, this._params.customNumbericProperties, this._params.customTextProperties);
 
-        urlVars.args = JSON.stringify(args,  SLTApiCall.removeEmptyAndNullsJSONReplacer);
+        args.eventProps = eventProps;
+
+        urlVars.args = JSON.stringify(args, SLTApiCall.removeEmptyAndNullsJSONReplacer);
         return urlVars;
     }
 

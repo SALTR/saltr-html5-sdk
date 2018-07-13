@@ -25,29 +25,32 @@ export class SLT2DBoardParser extends SLTBoardParser {
      * @return The parsed boards.
      */
     parseBoardContent(rootNode:any, assetMap:Dictionary<any>):Dictionary<any> {
-        const boardNodes: any = this.getBoardsNode(rootNode, SLTBoard.BOARD_TYPE_CANVAS_2D);
+        const boardNodes: any = SLTBoardParser.getBoardsNode(rootNode, SLTBoard.BOARD_TYPE_CANVAS_2D);
 
         const boards: Dictionary<any> = {};
         for (let boardId in boardNodes) {
-            const boardNode: any = boardNodes[boardId];
-            boards[boardId] = this.parseLevelBoard(boardNode, assetMap);
+            if (boardNodes.hasOwnProperty(boardId)) {
+                const boardNode: any = boardNodes[boardId];
+                boards[boardId] = this.parseLevelBoard(boardNode, assetMap);
+            }
         }
         return boards;
     }
 
     private parseLevelBoard(boardNode:any, assetMap:Dictionary<any>):SLT2DBoard {
-        const boardPropertyanys: Dictionary<any> = this.parseBoardProperties(boardNode);
+        const boardProperties: Dictionary<any> = SLTBoardParser.parseBoardProperties(boardNode);
 
-        const layers: Dictionary<any> = {};
+        const layers: Dictionary<SLT2DBoardLayer> = {};
         const layerNodes: any = boardNode.layers;
         for (const layerToken in layerNodes) {
-            const layerNode: any = layerNodes[layerToken];
-            const layer: SLT2DBoardLayer = this.parseLayer(layerNode, layerToken, assetMap);
-            layers[layerToken] = layer;
+            if (layerNodes.hasOwnProperty(layerToken)) {
+                const layerNode: any = layerNodes[layerToken];
+                layers[layerToken] = this.parseLayer(layerNode, layerToken, assetMap);
+            }
         }
 
         const config: SLT2DBoardConfig = new SLT2DBoardConfig(layers, boardNode, assetMap);
-        return new SLT2DBoard(boardNode.token, config, boardPropertyanys, SLTCheckPointParser.parseCheckpoints(boardNode));
+        return new SLT2DBoard(boardNode.token, config, boardProperties, SLTCheckPointParser.parseCheckpoints(boardNode));
     }
 
     private parseLayer(layerNode:any, layerToken:string, assetMap:Dictionary<any>):SLT2DBoardLayer {

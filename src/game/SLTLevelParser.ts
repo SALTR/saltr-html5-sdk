@@ -63,7 +63,9 @@ class SLTLevelParser {
             const assetNodes: any = rootNode["assets"][boardType];
             assetMap = {};
             for (let assetId in assetNodes) {
-                assetMap[assetId] = this.parseAsset(assetNodes[assetId], boardType);
+                if (assetNodes.hasOwnProperty(assetId)) {
+                    assetMap[assetId] = this.parseAsset(assetNodes[assetId], boardType);
+                }
             }
         }
         return assetMap;
@@ -101,7 +103,9 @@ class SLTLevelParser {
     private parseAssetStates(stateNodes: any, boardType: string): Dictionary<any> {
         const statesMap: Dictionary<any> = {};
         for (const stateId in stateNodes) {
-            statesMap[stateId] = this.parseAssetState(stateNodes[stateId], boardType);
+            if (stateNodes.hasOwnProperty(stateId)) {
+                statesMap[stateId] = this.parseAssetState(stateNodes[stateId], boardType);
+            }
         }
         return statesMap;
     }

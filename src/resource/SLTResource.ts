@@ -1,9 +1,7 @@
 import {SLTResourceURLTicket} from "./SLTResourceURLTicket";
-import {Timer} from "../timer/Timer";
-import {TimerEvent} from "../timer/TimerEvent";
-import {Utils} from "../utils/Utils";
-import * as request from "request";
+import Axios from "axios";
 import {URLRequest} from "../URLRequest";
+import * as FormData from "form-data";
 
 class SLTResource {
     private _data: any;
@@ -33,16 +31,33 @@ class SLTResource {
 
 
     public load(): void {
-        let urlRequest: URLRequest = this._ticket.getURLRequest();
-        request(urlRequest, (error, response, body) => {
-            if (error || response.statusCode >= 400) {
-                this.loadFailed();
-            } else {
-                this.completeHandler(body);
+        const urlRequest: URLRequest = this._ticket.getURLRequest();
+
+        let config: any = {
+            url: urlRequest.url,
+            method: urlRequest.method,
+            responseType: "json",
+        };
+
+        if (urlRequest.method !== "GET") {
+            const data: FormData = new FormData();
+            Object.keys(urlRequest.form).forEach(key => {
+                data.append(key, urlRequest.form[key]);
+            });
+
+            config = {
+                ...config,
+                data: data,
+                headers: data.getHeaders()
             }
+        }
+
+        Axios.request(config).then((response: any) => {
+            this.completeHandler(response.data);
+        }).catch(() => {
+            this.loadFailed();
         });
     }
-
 
     private completeHandler(body: any): void {
         this._data = body;

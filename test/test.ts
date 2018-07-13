@@ -1,28 +1,24 @@
 import {expect} from "chai";
-import 'mocha';
+import "mocha";
 import {SLTApiCall} from "../src/api/call/SLTApiCall";
 import {SLTAppDataApiCall} from "../src/api/call/SLTAppDataApiCall";
 import {SLTAppData} from "../src/SLTAppData";
 import {SLTAddPropertiesApiCall} from "../src/api/call/SLTAddPropertiesApiCall";
 import {SLTHeartbeatApiCall} from "../src/api/call/SLTHeartbeatApiCall";
 import {SLTLevelContentApiCall} from "../src/api/call/SLTLevelContentApiCall";
-import {SLTLevelReportApiCall} from "../src/api/call/SLTLevelReportApiCall";
-import * as request from "request";
 import {SLTStatus} from "../src/status/SLTStatus";
-import {SLTSaltr} from "../src";
-import {SLTExperiment} from "../src/SLTExperiment";
-import {SLTBasicProperties} from "../src/SLTBasicProperties";
-import {SLTLevelCollectionBody} from "../src/SLTLevelCollectionBody";
+import {SLTSaltr} from "../src/SLTSaltr";
 
 const clientKey: string = "815230";
 const socialId: string = "100000024783448";
 const sltSaltr: SLTSaltr = new SLTSaltr(clientKey, socialId);
+
 describe("Test Saltr SDK", () => {
+
     it('getAppData', () => {
-        sltSaltr.connect((data) => {
-        }, () => {}, null);
         const appData: SLTAppData = new SLTAppData();
         const apiCall: SLTApiCall = new SLTAppDataApiCall(appData);
+
         apiCall.call({clientKey, socialId}, (data: any) => {
             console.log(data);
             expect(data).an("object");
@@ -39,6 +35,7 @@ describe("Test Saltr SDK", () => {
                 .map((property: any) => property.levels)
                 .forEach((levels: any) => levels.forEach((level: any) => levelList.push(level)));
             const contentUrl: string = levelList[0].url;
+            console.log('contentUrl', contentUrl);
             expect(contentUrl).an("string");
 
             //request level json cdn url
@@ -70,6 +67,8 @@ describe("Test Saltr SDK", () => {
             console.log(data);
             expect(data.success).equal(true);
             expect(data.message).equal('Ok');
+        }, error => {
+            console.log(error);
         });
     });
 

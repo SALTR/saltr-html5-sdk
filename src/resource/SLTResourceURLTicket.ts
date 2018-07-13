@@ -1,6 +1,4 @@
 import {URLRequestHeader} from "../URLRequestHeader";
-import {URLRequestMethod} from "../URLRequestMethod";
-import * as request from "request";
 import {URLRequest} from "../URLRequest";
 
 class SLTResourceURLTicket {
