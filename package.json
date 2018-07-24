@@ -9,14 +9,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/SALTR/saltr-html5-sdk.git"
+		"url": "git+https://github.com/SALTR/saltr-js-sdk.git"
 	},
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/SALTR/saltr-html5-sdk/issues"
+		"url": "https://github.com/SALTR/saltr-js-sdk/issues"
 	},
-	"homepage": "https://github.com/SALTR/saltr-html5-sdk#readme",
+	"homepage": "https://github.com/SALTR/saltr-js-sdk#readme",
 	"devDependencies": {
 		"@types/chai": "^4.1.3",
 		"@types/mocha": "^5.2.0",
