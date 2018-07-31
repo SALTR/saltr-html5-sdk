@@ -1,4 +1,5 @@
-#SALTR HTML5 SDK
+SALTR HTML5 SDK
+===============
 
 Easily integrate SALTR JS SDK into your games or apps to get real-time control over settings, user experience tweaking, customization and level design. With SALTR you and your team will have availability to:
 
